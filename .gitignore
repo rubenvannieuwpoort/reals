@@ -1,4 +1,8 @@
 .venv
 dist
 reals/__pycache__
+tests/__pycache__
 reals.egg-info
+.tox
+.pytest_cache
+.mypy_cache

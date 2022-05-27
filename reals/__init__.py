@@ -190,10 +190,10 @@ class Real():
         return quadratic(Real._convert(other), self, (0, 1, 1, 0, 0, 0, 0, 1))
 
     def __sub__(self, other: 'Real') -> 'Real':
-        return quadratic(self, Real._convert(other), (0, 1,-1, 0, 0, 0, 0, 1))
+        return quadratic(self, Real._convert(other), (0, 1, -1, 0, 0, 0, 0, 1))
 
     def __rsub__(self, other: 'Real') -> 'Real':
-        return quadratic(Real._convert(other), self, (0, 1,-1, 0, 0, 0, 0, 1))
+        return quadratic(Real._convert(other), self, (0, 1, -1, 0, 0, 0, 0, 1))
 
     def __mul__(self, other: 'Real') -> 'Real':
         return quadratic(self, Real._convert(other), (1, 0, 0, 0, 0, 0, 0, 1))
@@ -201,10 +201,10 @@ class Real():
     def __rmul__(self, other: 'Real') -> 'Real':
         return quadratic(Real._convert(other), self, (1, 0, 0, 0, 0, 0, 0, 1))
 
-    def __truediv__ (self, other: 'Real') -> 'Real':
+    def __truediv__(self, other: 'Real') -> 'Real':
         return quadratic(self, Real._convert(other), (0, 1, 0, 0, 0, 0, 1, 0))
 
-    def __rtruediv__ (self, other: 'Real') -> 'Real':
+    def __rtruediv__(self, other: 'Real') -> 'Real':
         return quadratic(Real._convert(other), self, (0, 1, 0, 0, 0, 0, 1, 0))
 
 
@@ -499,7 +499,7 @@ def best_fraction(x: Real, num_iters: int) -> Fraction:
 
 
 def approximate(x: Real, n: int) -> float:
-    computation = x.f()
+    computation = x.start_computation()
     h = Homographic((1, 0, 0, 1))
     for _ in range(0, n):
         try:
@@ -514,7 +514,7 @@ def normalize(x: Real) -> Real:
     return algebraic(x, (1, 0, 0, 1))
 
 
-def terms(x: Real, n: int) -> list[int]:
+def terms(x: Real, n: int) -> list[tuple[int, int]]:
     collected_terms = []
     computation = x.start_computation()
     for _ in range(0, n):

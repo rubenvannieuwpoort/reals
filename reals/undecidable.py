@@ -1,6 +1,7 @@
 from . import Real, Homographic
 from typing import Generator
 
+
 def correct_digits(x: Real, n: int) -> str:
     digit_generator = correct_digits_helper(x)
     digits = str(next(digit_generator))

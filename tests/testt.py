@@ -1,13 +1,11 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
-from decimal import Decimal
 from typing import Generator
-from fractions import Fraction
-import itertools
-from typing import Callable, Union
+from typing import Callable
+
 
 class RangeRefinement(ABC):
     pass
+
 
 class IntegerRefinement(RangeRefinement):
     def __init__(self, base: int, numerator: int = 1) -> None:
@@ -17,9 +15,11 @@ class IntegerRefinement(RangeRefinement):
     def is_infinite(self) -> bool:
         return False
 
+
 class InfiniteRefinement(RangeRefinement):
     def is_infinite(self) -> bool:
         return True
+
 
 class RangeInformation(ABC):
     def __iter__(self):
@@ -29,13 +29,12 @@ class RangeInformation(ABC):
     def __next__(self) -> RangeRefinement:
         pass
 
+
 class SimpleContinuedFraction:
     def __init__(self, term_generator: Callable[[], Generator[int, None, None]]) -> None:
         self.start_computation = lambda: SimpleContinuedFractionComputation(term_generator())
         self.is_terminated = False
 
-    def start_computation(self):
-        return self.term_generator()
 
 class GeneralizedContinuedFraction(RangeInformation):
     def __init__(self, term_generator: Callable[[], Generator[tuple[int, int], None, None]]) -> None:
@@ -51,8 +50,10 @@ class GeneralizedContinuedFraction(RangeInformation):
             self.is_terminated = True
             return InfiniteRefinement()
 
+
 class Computation(RangeInformation):
     pass
+
 
 class SimpleContinuedFractionComputation(RangeInformation):
     def __init__(self, term_generator: Generator[int, None, None]) -> None:

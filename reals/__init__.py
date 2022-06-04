@@ -161,7 +161,7 @@ Computation = Generator[tuple[int, int], None, None]
 
 class Real():
     def __init__(self, x: Union[Callable[[], Computation], int, Fraction, Decimal],
-                 initial_steps = 0):
+                 initial_steps=0):
         if callable(x):
             self.start_computation = x
         elif isinstance(x, Fraction) or isinstance(x, int) or isinstance(x, Decimal):
@@ -219,7 +219,7 @@ def algebraic(x: Real, coeffs: tuple[int, int, int, int]) -> Real:
 
 
 def algebraic_computation(xf: Real, coeffs: tuple[int, int, int, int],
-                         initial_steps = 0) -> Computation:
+                          initial_steps=0) -> Computation:
     h = Homographic(coeffs)
     ingestions_after_last_emission = 0
     terminated = False
@@ -547,13 +547,3 @@ def terms(x: Real, n: int) -> list[tuple[int, int]]:
         except StopIteration:
             break
     return collected_terms
-
-def exp_small(x: Real) -> Real:
-    lo = 1
-    hi = 1 + x
-    
-
-def exp(x: Real) -> Real:
-    # TODO(Ruben): proper implementation of this
-    x_ceil: int = 4
-    return exp_int(x_ceil) * exp_small(x - x_ceil)

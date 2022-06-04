@@ -1,40 +1,52 @@
 from abc import ABC, abstractmethod
+from copy import copy
 from dataclasses import dataclass
-from decimal import Decimal
-from email.generator import Generator
-from fractions import Fraction
 import itertools
-from typing import Callable, Union
+from typing import Generator
+from typing import Callable
+
 
 # represents an expression of the form (ax + b)/(cx + d)
 @dataclass
 class HomographicExpression:
-    a: int; b: int; c: int; d: int
+    a: int
+    b: int
+    c: int
+    d: int
+
 
 # represents an expression of the form (axy + bx + cy + d)/(exy + fx + gy + h)
 @dataclass
 class BihomographicExpression:
-    a: int; b: int; c: int; d: int; e: int; f: int; g:int; h: int
+    a: int
+    b: int
+    c: int
+    d: int
+    e: int
+    f: int
+    g: int
+    h: int
+
 
 class Refinement(ABC):
     pass
 
+
 class IntegerRefinement(Refinement):
-    def __init__(self, n: int, m:int = 1):
+    def __init__(self, n: int, m: int = 1):
         self.n = n
         self.m = m
+
 
 class InfiniteRefinement(Refinement):
     def __init__(self):
         pass
 
-class RefinementStream(ABC):
-    pass
 
-class NonEmptyRefinementStream(RefinementStream):
+class RefinementStream:
     def __init__(self,
                  refinement_generator: Generator[Refinement, None, None],
-                 terminated = False
+                 terminated=False
                  ) -> None:
         self.refinement_generator = refinement_generator
         self._terminated = terminated
@@ -52,50 +64,73 @@ class NonEmptyRefinementStream(RefinementStream):
             self.has_terminated = True
             raise
 
-class EmptyRefinementStream(RefinementStream):
-    def __init__(self) -> None:
+
+class Computation(ABC):
+    @abstractmethod
+    def has_terminated(self) -> bool:
         pass
 
-    def has_terminated(self) -> bool:
-        return True
-
-class Computation(RefinementStream):
     @abstractmethod
     def __copy__(self) -> 'Computation':
         pass
 
     @abstractmethod
-    def refine(n: int) -> None:
+    def step(self) -> Refinement:
         pass
 
-class AlgebraicComputation:
-    def __init__(self, stream: RefinementStream,
+
+class ComputationFromContinuedFraction(Computation):
+    def __init__(self, cf: Generator[tuple[int, int], None, None]):
+        self._terminated = False
+        self._cf = cf
+
+    def __copy__(self) -> 'ComputationFromContinuedFraction':
+        self._cf, generator_copy = itertools.tee(self.cf)  # type: ignore
+        return ComputationFromContinuedFraction(generator_copy)  # type: ignore
+
+    def has_terminated(self) -> bool:
+        return self._terminated
+
+    def step(self) -> Refinement:
+        if self._terminated:
+            raise RuntimeError('step called on terminated computation')
+        try:
+            term = next(self._cf)
+            if isinstance(term, int):
+                n, m = term, 1
+            elif isinstance(term, tuple) and len(term) == 2:
+                n, m = term
+            else:
+                raise TypeError('expected either int or tuple[int, int] as term')
+            return IntegerRefinement(n, m)
+        except StopIteration:
+            self._terminated = True
+            return InfiniteRefinement()
+
+
+class AlgebraicComputation(Computation):
+    def __init__(self, input_computation: Computation,
                  state: HomographicExpression = HomographicExpression(1, 0, 0, 1)
                  ) -> None:
         self.state = state
-        self.stream = stream
+        self.input_computation = input_computation
 
     def __copy__(self) -> 'AlgebraicComputation':
-        self.stream, newstream = itertools.tee(self.stream)
-        return AlgebraicComputation(newstream, self.state)
+        return AlgebraicComputation(copy(self.input_computation), copy(self.state))
+
+    def has_terminated(self) -> bool:
+        return self.state.a == self.state.b and self.state.c == self.state.d
+
+    def step(self) -> Refinement:
+        # TODO
+        pass
+
 
 class Real:
-    def __init__(self,
-                 x: Union[Callable[[], Computation], Fraction, Decimal, int, str]) -> None:
-        if isinstance(x, str):
-            x = Decimal(x)
-
-        if callable(x):
-            self.start_computation = x
-        elif isinstance(x, Fraction) or isinstance(x, Fraction) or isinstance(x, Fraction):
-            p, q = x.as_integer_ratio()
-            stream = EmptyRefinementStream()
-            state = HomographicExpression(p, p, q, q)
-            self.start_computation = lambda: AlgebraicComputation(stream, state)
+    def __init__(self, x: Callable[[], Computation]) -> None:
+        assert callable(x)
+        self.start_computation = x
 
 
-
-
-
-class RangeInformation:
-    pass
+def continued_fraction(cf: Callable[[], Generator[tuple[int, int], None, None]]) -> Real:
+    return Real(lambda: ComputationFromContinuedFraction(cf()))

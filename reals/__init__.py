@@ -160,12 +160,13 @@ Computation = Generator[tuple[int, int], None, None]
 
 
 class Real():
-    def __init__(self, x: Union[Callable[[], Computation], int, Fraction, Decimal]):
+    def __init__(self, x: Union[Callable[[], Computation], int, Fraction, Decimal],
+                 initial_steps = 0):
         if callable(x):
             self.start_computation = x
         elif isinstance(x, Fraction) or isinstance(x, int) or isinstance(x, Decimal):
             p, q = x.as_integer_ratio()
-            self.start_computation = lambda: algebraic_computation(Real(empty), (p, p, q, q))
+            self.start_computation = lambda: algebraic_computation(Real(empty), (p, p, q, q), initial_steps)
         else:
             raise TypeError(f'Cannot initialize Real from argument of type {type(x)}')
 
@@ -217,11 +218,19 @@ def algebraic(x: Real, coeffs: tuple[int, int, int, int]) -> Real:
     return Real(lambda: algebraic_computation(x, coeffs))
 
 
-def algebraic_computation(xf: Real, coeffs: tuple[int, int, int, int]) -> Computation:
+def algebraic_computation(xf: Real, coeffs: tuple[int, int, int, int],
+                         initial_steps = 0) -> Computation:
     h = Homographic(coeffs)
     ingestions_after_last_emission = 0
     terminated = False
     x = xf.start_computation()
+
+    for _ in range(initial_steps):
+        try:
+            h.ingest(next(x))
+        except StopIteration:
+            h.ingest_inf()
+            terminated = True
 
     assert not(h.c == 0 and h.d == 0)
 
@@ -423,6 +432,21 @@ def pi_computation() -> Computation:
 pi = Real(pi_computation)
 
 
+# This is significantly faster than Russian peasant exponentiation
+def exp_int_computation(n: int) -> Computation:
+    # yield (1, 2 * n)
+    # yield (2 - n, n * n)
+    m = 6
+    while True:
+        yield (m, n * n)
+        m += 4
+
+
+def exp_int(n: int) -> Real:
+    n_squared = n * n
+    return algebraic(Real(lambda: exp_int_computation(n)), (2 + n, n_squared, 2 - n, n_squared))
+
+
 # SECTION CONSUMERS
 
 def rational_bounds(x: Real, num_iters: int) -> tuple[Fraction, Fraction]:
@@ -523,3 +547,13 @@ def terms(x: Real, n: int) -> list[tuple[int, int]]:
         except StopIteration:
             break
     return collected_terms
+
+def exp_small(x: Real) -> Real:
+    lo = 1
+    hi = 1 + x
+    
+
+def exp(x: Real) -> Real:
+    # TODO(Ruben): proper implementation of this
+    x_ceil: int = 4
+    return exp_int(x_ceil) * exp_small(x - x_ceil)

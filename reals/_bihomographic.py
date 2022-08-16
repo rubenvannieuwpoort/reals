@@ -8,8 +8,8 @@ class Bihomographic:
     g: int
     h: int
 
-    def __init__(self, coeffs: tuple[int, int, int, int, int, int, int, int]) -> None:
-        self.a, self.b, self.c, self.d, self.e, self.f, self.g, self.h = coeffs
+    def __init__(self, a: int, b: int, c: int, d: int, e: int, f: int, g: int, h: int) -> None:
+        self.a, self.b, self.c, self.d, self.e, self.f, self.g, self.h = a, b, c, d, e, f, g, h
 
     # replace x by (n + m/x), and bring the resulting expression into biholomorphic form again
     def x_ingest(self, term: tuple[int, int]) -> None:

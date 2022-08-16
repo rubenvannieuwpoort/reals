@@ -1,4 +1,6 @@
-from reals._algebraic_computation import Computation, AlgebraicComputation
+from reals._computation import Computation
+from reals._algebraic_computation import AlgebraicComputation
+from reals._quadratic_computation import QuadraticComputation
 
 import itertools
 from fractions import Fraction
@@ -40,6 +42,8 @@ class Real:
         if isinstance(other, Fraction) or isinstance(other, int):
             p, q = other.as_integer_ratio()
             return Real(lambda: AlgebraicComputation(iter(self), (p, 0, 0, q)))
+        elif isinstance(other, Real):
+            return Real(lambda: QuadraticComputation(iter(self), iter(other), (1, 0, 0, 0, 0, 0, 0, 1)))
         else:
             raise TypeError()
 
@@ -54,6 +58,8 @@ class Real:
         if isinstance(other, Fraction) or isinstance(other, int):
             p, q = other.as_integer_ratio()
             return Real(lambda: AlgebraicComputation(iter(self), (q, p, 0, q)))
+        elif isinstance(other, Real):
+            return Real(lambda: QuadraticComputation(iter(self), iter(other), (0, 1, 1, 0, 0, 0, 0, 1)))
         else:
             raise TypeError()
 
@@ -68,6 +74,8 @@ class Real:
         if isinstance(other, Fraction) or isinstance(other, int):
             p, q = other.as_integer_ratio()
             return Real(lambda: AlgebraicComputation(iter(self), (q, -p, 0, q)))
+        elif isinstance(other, Real):
+            return Real(lambda: QuadraticComputation(iter(self), iter(other), (0, 0, -1, 0, 0, 0, 0, 1)))
         else:
             raise TypeError()
 
@@ -82,6 +90,8 @@ class Real:
         if isinstance(other, Fraction) or isinstance(other, int):
             p, q = other.as_integer_ratio()
             return Real(lambda: AlgebraicComputation(iter(self), (q, 0, 0, p)))
+        elif isinstance(other, Real):
+            return Real(lambda: QuadraticComputation(iter(self), iter(other), (0, 1, 0, 0, 0, 0, 1, 0)))
         else:
             raise TypeError()
 

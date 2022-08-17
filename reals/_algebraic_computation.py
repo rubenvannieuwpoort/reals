@@ -16,6 +16,7 @@ class AlgebraicComputation(Computation):
         self.state = Homographic(a, b, c, d)
         self.x = x
         self.max_ingestions = max_ingestions
+        self.terminated = False
 
     def ingest_x(self) -> None:
         try:
@@ -24,8 +25,10 @@ class AlgebraicComputation(Computation):
             self.state.ingest_inf()
 
     def __next__(self) -> tuple[int, int]:
-        if self.state.c == 0 and self.state.d == 0:
+        if self.terminated:
             raise StopIteration()
+
+        assert self.state.c != 0 and (self.state.c + self.state.d) != 0
 
         ingestions = 0
         while ingestions < self.max_ingestions:
@@ -34,7 +37,7 @@ class AlgebraicComputation(Computation):
                 n2 = (self.state.a + self.state.b) // (self.state.c + self.state.d)
 
                 if n1 == n2:
-                    self.state.emit((n1, 1))
+                    self.terminated = self.state.emit((n1, 1))
                     return (n1, 1)
 
             self.ingest_x()
@@ -42,5 +45,5 @@ class AlgebraicComputation(Computation):
 
         n = min(n1, n2)
         m = max(n1, n1) - n + 1
-        self.state.emit((n, m))
+        self.terminated = self.state.emit((n, m))
         return (n, m)

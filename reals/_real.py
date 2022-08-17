@@ -15,6 +15,15 @@ class Real:
         return self.start_computation()
 
     @staticmethod
+    def from_int(n: int) -> 'Real':
+        return Real.from_scf_term_iterable([n])
+
+    @staticmethod
+    def from_fraction(f: Fraction) -> 'Real':
+        p, q = f.as_integer_ratio()
+        return Real(lambda: AlgebraicComputation(iter([]), (p, p, q, q)))
+
+    @staticmethod
     def from_scf_term_iterable(i: Iterable[int]) -> 'Real':
         return Real(lambda: iter(map(lambda n: (n, 1), i)))
 

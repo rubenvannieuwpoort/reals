@@ -1,5 +1,6 @@
 from reals._computation import Computation
 from reals._homographic import Homographic
+from reals._utils import sign
 
 
 DEFAULT_MAX_INGESTIONS = 5
@@ -23,11 +24,12 @@ class AlgebraicComputation(Computation):
             self.state.ingest_inf()
 
     def __next__(self) -> tuple[int, int]:
-        assert not (self.state.c == 0 and self.state.d == 0)
+        if self.state.c == 0 and self.state.d == 0:
+            raise StopIteration()
 
         ingestions = 0
         while ingestions < self.max_ingestions:
-            if self.state.c != 0:
+            if self.state.c != 0 and sign(self.state.c) == sign(self.state.c + self.state.d):
                 n1 = self.state.a // self.state.c
                 n2 = (self.state.a + self.state.b) // (self.state.c + self.state.d)
 

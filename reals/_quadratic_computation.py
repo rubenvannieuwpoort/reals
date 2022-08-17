@@ -1,14 +1,9 @@
 from reals._computation import Computation
 from reals._bihomographic import Bihomographic
+from reals._utils import sign
 
 
 DEFAULT_MAX_INGESTIONS = 5
-
-
-def sign(x: int) -> int:
-    if x:
-        return 1 if x > 0 else -1
-    return 0
 
 
 class QuadraticComputation(Computation):

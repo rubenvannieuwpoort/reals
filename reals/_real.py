@@ -84,7 +84,7 @@ class Real:
             p, q = other.as_integer_ratio()
             return Real(lambda: AlgebraicComputation(iter(self), (q, -p, 0, q)))
         elif isinstance(other, Real):
-            return Real(lambda: QuadraticComputation(iter(self), iter(other), (0, 0, -1, 0, 0, 0, 0, 1)))
+            return Real(lambda: QuadraticComputation(iter(self), iter(other), (0, 1, -1, 0, 0, 0, 0, 1)))
         else:
             raise TypeError()
 

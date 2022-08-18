@@ -28,7 +28,7 @@ class AlgebraicComputation(Computation):
         if self.terminated:
             raise StopIteration()
 
-        assert self.state.c != 0 and (self.state.c + self.state.d) != 0
+        assert not (self.state.c == 0 and self.state.d == 0)
 
         ingestions = 0
         while ingestions < self.max_ingestions:

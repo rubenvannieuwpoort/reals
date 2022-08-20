@@ -3,7 +3,7 @@ from reals._homographic import Homographic
 from reals._utils import sign
 
 
-DEFAULT_MAX_INGESTIONS = 5
+DEFAULT_MAX_INGESTIONS = 15
 
 
 class AlgebraicComputation(Computation):

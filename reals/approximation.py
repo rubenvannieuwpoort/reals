@@ -26,7 +26,6 @@ def floating_point_approximation(x: Real, iterations: int) -> float:
 
 def _approximate_epsilon_helper(h: Homographic, computation: Computation, epsilon: Fraction) \
         -> tuple[Homographic, Computation]:
-    # h = Homographic(1, 0, 0, 1)
     i = 0
     while h.c == 0 or h.d == 0 or abs(Fraction(h.a, h.c) - Fraction(h.b, h.d)) > epsilon:
         h.ingest(next(computation))

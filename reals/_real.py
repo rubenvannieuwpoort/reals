@@ -47,6 +47,9 @@ class Real:
     def from_gcf_term_function(f: Callable[[int], tuple[int, int]]) -> 'Real':
         return Real(lambda: map(f, itertools.count(1)))
 
+    def __neg__(self):
+        return Real(lambda: AlgebraicComputation(iter(self), (-1, 0, 0, 1)))
+
     def __mul__(self, other):
         if isinstance(other, Fraction) or isinstance(other, int):
             p, q = other.as_integer_ratio()

@@ -1,4 +1,5 @@
 from reals._computation import Computation
+from reals._homographic import Homographic
 from reals._algebraic_computation import AlgebraicComputation
 from reals._quadratic_computation import QuadraticComputation
 
@@ -113,3 +114,66 @@ class Real:
             return Real(lambda: AlgebraicComputation(iter(self), (0, p, q, 0)))
         else:
             raise TypeError()
+
+    def __format__(self, spec):
+        assert spec[0] == '.'
+        assert spec[-1] == 'f'
+        num_digits = int(spec[1:-1])
+        return digits(self, num_digits)
+
+
+def digits(x: Real, n: int) -> str:
+    digit_generator = digits_helper(x)
+    digits = str(next(digit_generator))
+    try:
+        digits += '.'
+        for _ in range(n):
+            digits += next(digit_generator)
+    except StopIteration:
+        return digits
+    return digits
+
+
+def digits_helper(xf: Real) -> Generator[str, None, None]:
+    h = Homographic(1, 0, 0, 1)
+    terminated = False
+    is_negative = False
+    x = iter(xf)
+
+    assert not (h.c == 0 and h.d == 0)
+
+    while not (h.c == 0 and h.d == 0):
+        if h.c != 0 and h.c + h.d != 0:
+            n1 = h.a // h.c
+            n2 = (h.a + h.b) // (h.c + h.d)
+            if n1 == n2:
+                digit = n1
+
+                h.a, h.b = h.a - digit * h.c, h.b - digit * h.d
+                h.a, h.b = h.a * 10, h.b * 10
+
+                if (not is_negative) and digit < 0:
+                    is_negative = True
+                    digit += 1
+                    if digit == 0:
+                        yield '-' + str(digit)
+                    else:
+                        yield str(digit)
+                elif is_negative:
+                    if digit > 0 and h.a == 0 and h.b == 0:
+                        digit = 10 - digit
+                        is_negative = False
+                    else:
+                        digit = 9 - digit
+                    yield str(digit)
+                else:
+                    yield str(digit)
+
+                continue
+
+        assert not terminated
+        try:
+            h.ingest(next(x))
+        except StopIteration:
+            h.ingest_inf()
+            terminated = True

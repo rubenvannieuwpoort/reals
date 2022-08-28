@@ -1,0 +1,111 @@
+from reals._real import Real
+from reals._homographic import Homographic
+from reals._computation import Computation
+
+from fractions import Fraction
+from typing import Optional, Union
+
+
+class Approximation:
+    def __init__(self, x: Union[Real, Computation]):
+        self.ingestions = 0
+        self.is_farey_pair = True
+        self.state = Homographic(1, 0, 0, 1)
+        if isinstance(x, Real):
+            self.computation = x.compute()
+        else:
+            self.computation = x
+
+    def improve(self, n: int = 1) -> None:
+        for _ in range(0, n):
+            next_term = next(self.computation)
+            if self.is_farey_pair and isinstance(next_term, tuple):
+                _, m = next_term
+                self.is_farey_pair = self.is_farey_pair and m == 1
+
+            self.state.ingest(next_term)
+            self.ingestions += 1
+
+    def improve_epsilon(self, epsilon: Fraction) -> None:
+        while not (eps := self.epsilon_fraction()) or eps > epsilon:
+            self.improve()
+
+    def as_fraction(self) -> Optional[Fraction]:
+        if self.state.c != 0:
+            return Fraction(self.state.a, self.state.c)
+        return None
+
+    def as_float(self) -> Optional[float]:
+        if self.state.c != 0:
+            return self.state.a / self.state.c
+        return None
+
+    def _lower(self) -> tuple[int, int]:
+        if self.ingestions % 2 == 1:
+            return (self.state.a, self.state.c)
+        else:
+            return (self.state.a + self.state.b, self.state.c + self.state.d)
+
+    def _upper(self) -> tuple[int, int]:
+        if self.ingestions % 2 == 1:
+            return (self.state.a + self.state.b, self.state.c + self.state.d)
+        else:
+            return (self.state.a, self.state.c)
+
+    def lower_bound_fraction(self) -> Optional[Fraction]:
+        if self.ingestions == 0:
+            return None
+        p, q = self._lower()
+        return Fraction(p, q) if q != 0 else None
+
+    def lower_bound_float(self) -> Optional[float]:
+        if self.ingestions == 0:
+            return None
+        p, q = self._lower()
+        return p / q if q != 0 else None
+
+    def upper_bound_fraction(self) -> Optional[Fraction]:
+        p, q = self._upper()
+        return Fraction(p, q) if q != 0 else None
+
+    def upper_bound_float(self) -> Optional[float]:
+        p, q = self._upper()
+        return p / q if q != 0 else None
+
+    def interval_fraction(self) -> tuple[Optional[Fraction], Optional[Fraction]]:
+        return (self.lower_bound_fraction(), self.upper_bound_fraction())
+
+    def interval_float(self) -> tuple[Optional[float], Optional[float]]:
+        return (self.lower_bound_float(), self.upper_bound_float())
+
+    def epsilon_fraction(self) -> Optional[Fraction]:
+        lower, upper = self.interval_fraction()
+        if lower and upper:
+            return upper - lower
+        return None
+
+    def float_epsilon(self) -> Optional[float]:
+        rational_epsilon = self.epsilon_fraction()
+        if rational_epsilon:
+            return float(rational_epsilon)
+        return None
+
+    def closest_float(self) -> float:
+        while not (lo := self.lower_bound_float()) or not (hi := self.upper_bound_float()) or lo != hi:
+            self.improve()
+
+        assert lo
+        return lo
+
+
+def best_rational_approximations(x: Real, n: int):
+    a = Approximation(x)
+
+    result: list[Fraction] = []
+    for _ in range(0, n):
+        a.improve()
+        rational_approximation = a.as_fraction()
+        assert rational_approximation
+        result.append(rational_approximation)
+
+    return result

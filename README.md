@@ -40,9 +40,9 @@ print(Approximation(pi / e).closest_float())
 ```
 
 
-Print a rational approximation of $\pi \cdot e$ that [has an error of less than $10^{-20}$](https://www.wolframalpha.com/input?i=592968296981%2F69436387775-pi*e):
+Print a rational approximation of $e^\pi$ that [has an error of less than $10^{-20}$](https://www.wolframalpha.com/input?i=231604552633%2F10008540207-e%5Epi):
 ```
-from reals import pi, e
+from reals import pi, exp
 from reals.approximation import Approximation
 
 from fractions import Fraction
@@ -50,7 +50,7 @@ from fractions import Fraction
 
 epsilon = Fraction(1, 10**20)
 
-approximation = Approximation(pi * e)
+approximation = Approximation(exp(pi))
 approximation.improve_epsilon(epsilon)
 
 print(approximation.as_fraction())
@@ -82,14 +82,14 @@ print(lower_bound, upper_bound)
 The reals library is very much in beta, much work is still to be done:
   - Manual testing
   - Add unit tests
-  - Implement square roots, exponentials, logarithms, trigonometric functions
+  - Implement square roots, logarithms, trigonometric functions
   - Clean up the classes/functions
   - Write better introduction and documentation
 
 
-### Adding exponentials and trigonometric functions
+### Exponentials and trigonometric functions
 
-For a real number $x$, we can compute $e^x$ as follows:
+For a real number $x$, we compute $e^x$ as follows:
   1. Write $x = n + x_r$ with $n \in \mathbb{Z}$ and $-(1 + \epsilon) < x \leq 0$
   2. Calculate $e^x = e^n \cdot e^{x_r}$
 

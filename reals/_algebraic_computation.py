@@ -23,7 +23,12 @@ class AlgebraicComputation(Computation):
         try:
             self.state.ingest(next(self.x))
         except StopIteration:
-            self.state.ingest_inf()
+            self.terminated = self.state.ingest_inf()
+
+    # def check_termination(self) -> None:
+    #     self.terminated = self.state.is_terminated()
+    #     if self.terminated:
+    #         raise StopIteration()
 
     def __next__(self) -> Term:
         if self.terminated:
@@ -42,6 +47,9 @@ class AlgebraicComputation(Computation):
                     return n1
 
             self.ingest_x()
+            if self.terminated:
+                raise StopIteration()
+
             ingestions += 1
 
         n1 = self.state.a // self.state.c
@@ -49,4 +57,5 @@ class AlgebraicComputation(Computation):
         n = min(n1, n2)
         m = max(n1, n1) - n + 1
         self.terminated = self.state.emit((n, m))
+        assert not self.terminated
         return (n, m)

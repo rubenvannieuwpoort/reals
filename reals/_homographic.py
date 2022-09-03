@@ -17,8 +17,9 @@ class Homographic:
         self.a, self.b = n * self.a + self.b, m * self.a
         self.c, self.d = n * self.c + self.d, m * self.c
 
-    def ingest_inf(self):
+    def ingest_inf(self) -> bool:
         self.b, self.d = self.a, self.c
+        return self.c == 0 and self.d == 0
 
     def emit(self, term: Term) -> bool:
         n, m = expand_term(term)

@@ -13,21 +13,25 @@ class QuadraticComputation(Computation):
         a, b, c, d, e, f, g, h = coeffs
         self.state = Bihomographic(a, b, c, d, e, f, g, h)
         self.x, self.y = x, y
+        self.terminated = False
         self.max_ingestions = max_ingestions
 
     def ingest_x(self) -> None:
         try:
             self.state.x_ingest(next(self.x))
         except StopIteration:
-            self.state.x_ingest_inf()
+            self.terminated = self.state.x_ingest_inf()
 
     def ingest_y(self) -> None:
         try:
             self.state.y_ingest(next(self.y))
         except StopIteration:
-            self.state.y_ingest_inf()
+            self.terminated = self.state.y_ingest_inf()
 
     def __next__(self) -> Term:
+        if self.terminated:
+            raise StopIteration()
+
         assert not (self.state.e == 0 and self.state.f == 0 and
                     self.state.g == 0 and self.state.h == 0)
 
@@ -64,9 +68,11 @@ class QuadraticComputation(Computation):
                     self.ingest_x()
                 if y_ingest:
                     self.ingest_y()
+                if self.terminated:
+                    raise StopIteration()
                 continue
 
-            self.state.emit(q00)
+            self.terminated = self.state.emit(q00)
             return q00
 
         d00 = self.state.e + self.state.f + self.state.g + self.state.h
@@ -77,5 +83,5 @@ class QuadraticComputation(Computation):
 
         n = min(q00, q10, q01, q11)
         m = max(q00, q10, q01, q11) - n + 1
-        self.state.emit((n, m))
+        self.terminated = self.state.emit((n, m))
         return (n, m)

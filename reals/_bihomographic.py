@@ -20,9 +20,11 @@ class Bihomographic:
         self.a, self.b, self.c, self.d = n * self.a + self.c, n * self.b + self.d, m * self.a, m * self.b
         self.e, self.f, self.g, self.h = n * self.e + self.g, n * self.f + self.h, m * self.e, m * self.f
 
-    def x_ingest_inf(self) -> None:
+    def x_ingest_inf(self) -> bool:
         self.c, self.d, = self.a, self.b
         self.g, self.h = self.e, self.f
+        # TODO(Ruben): determine when to return True here
+        return False
 
     # replace y by (n + m/y), and bring the resulting expression into biholomorphic form again
     def y_ingest(self, term: Term) -> None:
@@ -30,14 +32,18 @@ class Bihomographic:
         self.a, self.b, self.c, self.d = n * self.a + self.b, m * self.a, n * self.c + self.d, m * self.c
         self.e, self.f, self.g, self.h = n * self.e + self.f, m * self.e, n * self.g + self.h, m * self.g
 
-    def y_ingest_inf(self) -> None:
+    def y_ingest_inf(self) -> bool:
         self.b, self.d = self.a, self.c
         self.f, self.h = self.e, self.g
+        # TODO(Ruben): determine when to return True here
+        return False
 
     # replace the biholomorphic expression e by m / (e - n)
-    def emit(self, term: Term) -> None:
+    def emit(self, term: Term) -> bool:
         n, m = expand_term(term)
         self.a, self.b, self.c, self.d = \
             self.a - n * self.e, self.b - n * self.f, self.c - n * self.g, self.d - n * self.h
+        terminated = self.a == 0 and self.b == 0 and self.c == 0 and self.d == 0
         self.a, self.b, self.c, self.d, self.e, self.f, self.g, self.h = \
             m * self.e, m * self.f, m * self.g, m * self.h, self.a, self.b, self.c, self.d
+        return terminated

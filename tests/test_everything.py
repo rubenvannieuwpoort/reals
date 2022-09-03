@@ -62,7 +62,7 @@ def test_terminating_algebraic_computation() -> None:
     assert next(c) == 5
 
     with pytest.raises(StopIteration):
-       next(c)
+        next(c)
 
 
 def test_terminating_quadratic_computation() -> None:
@@ -100,7 +100,8 @@ def sqrt2_gen() -> Generator[int, None, None]:
     while True:
         yield 2
 
-def test_() -> None:
+
+def test_generalized_continued_fractions() -> None:
     sqrt2 = Real(sqrt2_gen())
     a = Approximation(sqrt2 * sqrt2)
     a.improve_epsilon(Fraction(1, 1000))

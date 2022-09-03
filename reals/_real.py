@@ -1,14 +1,15 @@
+from __future__ import annotations
 
-from decimal import Decimal
 from reals._term import Term
-from reals._homographic import Homographic
 from reals._computation import Computation
+from reals._homographic import Homographic
+from reals._compare import compare, ComparisonResult
 from reals._algebraic_computation import AlgebraicComputation
 from reals._quadratic_computation import QuadraticComputation
 
+from decimal import Decimal
 from fractions import Fraction
 from typing import Generator, Iterable, Iterator, Union
-
 
 DEFAULT_DIGITS = 5
 
@@ -141,6 +142,15 @@ class Real:
             return Real(AlgebraicComputation(self.compute(), (0, p, q, 0)))
         else:
             raise TypeError()
+
+    def __lt__(self, other: Real) -> bool:
+        return compare(self, other) == ComparisonResult.SMALLER
+
+    def __gt__(self, other: Real) -> bool:
+        return compare(self, other) == ComparisonResult.GREATER
+
+    def __eq__(self, other) -> bool:
+        return compare(self, other) == ComparisonResult.UNKNOWN
 
     def __format__(self, spec):
         assert spec[0] == '.'

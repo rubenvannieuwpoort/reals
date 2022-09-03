@@ -22,11 +22,19 @@ class Approximation:
                 next_term = next(self.computation)
                 self.state.ingest(next_term)
             except StopIteration:
+                self.state.ingest_inf()
                 break
 
     def improve_epsilon(self, epsilon: Fraction) -> None:
         while not (eps := self.epsilon_fraction()) or eps > epsilon:
-            self.improve()
+            try:
+                self.ingestions += 1
+                next_term = next(self.computation)
+                self.state.ingest(next_term)
+            except StopIteration:
+                self.state.ingest_inf()
+                assert self.epsilon_fraction() == 0
+                break
 
     def as_fraction(self) -> Optional[Fraction]:
         if self.state.c != 0:

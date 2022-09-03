@@ -9,7 +9,6 @@ from typing import Optional, Union
 class Approximation:
     def __init__(self, x: Union[Real, Computation]):
         self.ingestions = 0
-        self.is_farey_pair = True
         self.state = Homographic(1, 0, 0, 1)
         if isinstance(x, Real):
             self.computation = x.compute()
@@ -18,17 +17,24 @@ class Approximation:
 
     def improve(self, n: int = 1) -> None:
         for _ in range(0, n):
-            next_term = next(self.computation)
-            if self.is_farey_pair and isinstance(next_term, tuple):
-                _, m = next_term
-                self.is_farey_pair = self.is_farey_pair and m == 1
-
-            self.state.ingest(next_term)
-            self.ingestions += 1
+            try:
+                self.ingestions += 1
+                next_term = next(self.computation)
+                self.state.ingest(next_term)
+            except StopIteration:
+                self.state.ingest_inf()
+                break
 
     def improve_epsilon(self, epsilon: Fraction) -> None:
         while not (eps := self.epsilon_fraction()) or eps > epsilon:
-            self.improve()
+            try:
+                self.ingestions += 1
+                next_term = next(self.computation)
+                self.state.ingest(next_term)
+            except StopIteration:
+                self.state.ingest_inf()
+                assert self.epsilon_fraction() == 0
+                break
 
     def as_fraction(self) -> Optional[Fraction]:
         if self.state.c != 0:

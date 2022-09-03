@@ -1,8 +1,9 @@
+from typing import Generator
 from reals._real import Real, CachedComputation
 from reals._algebraic_computation import AlgebraicComputation
 from reals._quadratic_computation import QuadraticComputation
 from fractions import Fraction
-# import pytest
+import pytest
 from reals.approximation import Approximation
 
 
@@ -50,8 +51,8 @@ def test_rational_real_terminates() -> None:
 
     assert terms == [0, 3, 1, 2, 2, 2, 2]
 
-    # with pytest.raises(StopIteration):
-    #     next(c)
+    with pytest.raises(StopIteration):
+        next(c)
 
 
 def test_terminating_algebraic_computation() -> None:
@@ -60,8 +61,8 @@ def test_terminating_algebraic_computation() -> None:
     assert next(c) == 0
     assert next(c) == 5
 
-    # with pytest.raises(StopIteration):
-    #     next(c)
+    with pytest.raises(StopIteration):
+       next(c)
 
 
 def test_terminating_quadratic_computation() -> None:
@@ -71,11 +72,11 @@ def test_terminating_quadratic_computation() -> None:
     assert next(c) == 0
     assert next(c) == 5
 
-    # with pytest.raises(StopIteration):
-    #     next(c)
+    with pytest.raises(StopIteration):
+        next(c)
 
-    # with pytest.raises(StopIteration):
-    #     next(c)
+    with pytest.raises(StopIteration):
+        next(c)
 
 
 def test_terminating_quadratic_computation2() -> None:
@@ -85,11 +86,22 @@ def test_terminating_quadratic_computation2() -> None:
     assert next(c) == 0
     assert next(c) == 5
 
-    # with pytest.raises(StopIteration):
-    #     next(c)
+    with pytest.raises(StopIteration):
+        next(c)
 
 
 def test_termination() -> None:
-    # f = get_rational_from_real(Fraction(2, 1) * Real.from_fraction(Fraction(1, 10)))
-    # assert f == Fraction(1, 5)
-    pass
+    f = get_rational_from_real(Fraction(2, 1) * Real.from_fraction(Fraction(1, 10)))
+    assert f == Fraction(1, 5)
+
+
+def sqrt2_gen() -> Generator[int, None, None]:
+    yield 1
+    while True:
+        yield 2
+
+def test_() -> None:
+    sqrt2 = Real(sqrt2_gen())
+    a = Approximation(sqrt2 * sqrt2)
+    a.improve_epsilon(Fraction(1, 1000))
+    assert a.lower_bound_fraction() < 2 and 2 < a.upper_bound_fraction()

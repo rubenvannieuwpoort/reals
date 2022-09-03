@@ -1,4 +1,9 @@
 from reals._real import Real, CachedComputation
+from reals._algebraic_computation import AlgebraicComputation
+from reals._quadratic_computation import QuadraticComputation
+from fractions import Fraction
+# import pytest
+from reals.approximation import Approximation
 
 
 def test_real_cache_is_shared() -> None:
@@ -22,3 +27,69 @@ def test_real_cache_is_shared() -> None:
 
     assert c1.index == 3
     assert c2.index == 1
+
+
+MAX_ITERATIONS = 100
+
+
+def get_rational_from_real(x: Real) -> Fraction:
+    a = Approximation(x)
+    a.improve(MAX_ITERATIONS)
+    fraction = a.lower_bound_fraction()
+    assert fraction == a.upper_bound_fraction()
+    assert fraction
+    return fraction
+
+
+def test_rational_real_terminates() -> None:
+    x = Real.from_fraction(Fraction(123, 456))
+    c = x.compute()
+    terms = []
+    for _ in range(0, 7):
+        terms.append(next(c))
+
+    assert terms == [0, 3, 1, 2, 2, 2, 2]
+
+    # with pytest.raises(StopIteration):
+    #     next(c)
+
+
+def test_terminating_algebraic_computation() -> None:
+    x = Real.from_fraction(Fraction(1, 10))
+    c = AlgebraicComputation(x.compute(), (2, 0, 0, 1))
+    assert next(c) == 0
+    assert next(c) == 5
+
+    # with pytest.raises(StopIteration):
+    #     next(c)
+
+
+def test_terminating_quadratic_computation() -> None:
+    x = Real.from_fraction(Fraction(2, 1))
+    y = Real.from_fraction(Fraction(1, 10))
+    c = QuadraticComputation(x.compute(), y.compute(), (1, 0, 0, 0, 0, 0, 0, 1))
+    assert next(c) == 0
+    assert next(c) == 5
+
+    # with pytest.raises(StopIteration):
+    #     next(c)
+
+    # with pytest.raises(StopIteration):
+    #     next(c)
+
+
+def test_terminating_quadratic_computation2() -> None:
+    x = Real.from_fraction(Fraction(2, 1))
+    y = Real.from_fraction(Fraction(1, 10))
+    c = QuadraticComputation(x.compute(), y.compute(), (1, 0, 0, 0, 0, 0, 0, 1))
+    assert next(c) == 0
+    assert next(c) == 5
+
+    # with pytest.raises(StopIteration):
+    #     next(c)
+
+
+def test_termination() -> None:
+    # f = get_rational_from_real(Fraction(2, 1) * Real.from_fraction(Fraction(1, 10)))
+    # assert f == Fraction(1, 5)
+    pass

@@ -3,8 +3,9 @@ from reals._real import Real, CachedComputation
 from reals._algebraic_computation import AlgebraicComputation
 from reals._quadratic_computation import QuadraticComputation
 from fractions import Fraction
-import pytest
 from reals.approximation import Approximation
+
+import pytest
 
 
 def test_real_cache_is_shared() -> None:
@@ -105,4 +106,11 @@ def test_generalized_continued_fractions() -> None:
     sqrt2 = Real(sqrt2_gen())
     a = Approximation(sqrt2 * sqrt2)
     a.improve_epsilon(Fraction(1, 1000))
-    assert a.lower_bound_fraction() < 2 and 2 < a.upper_bound_fraction()
+
+    lo = a.lower_bound_fraction()
+    assert lo
+
+    hi = a.upper_bound_fraction()
+    assert hi
+
+    assert lo < 2 and 2 < hi

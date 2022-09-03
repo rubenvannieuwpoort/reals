@@ -46,7 +46,7 @@ class QuadraticComputation(Computation):
             d11 = self.state.e
 
             s00 = sign(d00)
-            if sign(d01) != s00 or sign(d10) != s00 or sign(d11) != s00:
+            if d00 != 0 and sign(d01) != s00 or sign(d10) != s00 or sign(d11) != s00:
                 x_ingest = True
                 y_ingest = True
             else:

@@ -23,8 +23,7 @@ class Bihomographic:
     def x_ingest_inf(self) -> bool:
         self.c, self.d, = self.a, self.b
         self.g, self.h = self.e, self.f
-        # TODO(Ruben): determine when to return True here
-        return False
+        return self.e == 0 and self.f == 0 and self.g == 0 and self.h == 0
 
     # replace y by (n + m/y), and bring the resulting expression into biholomorphic form again
     def y_ingest(self, term: Term) -> None:
@@ -35,8 +34,7 @@ class Bihomographic:
     def y_ingest_inf(self) -> bool:
         self.b, self.d = self.a, self.c
         self.f, self.h = self.e, self.g
-        # TODO(Ruben): determine when to return True here
-        return False
+        return self.e == 0 and self.f == 0 and self.g == 0 and self.h == 0
 
     # replace the biholomorphic expression e by m / (e - n)
     def emit(self, term: Term) -> bool:

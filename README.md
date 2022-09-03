@@ -21,6 +21,15 @@ from reals import e
 print('{:.f10000}.format(e))
 ```
 
+Comparing the first 20 digits of `reals.pi` and `math.pi`:
+```
+from math import pi as math_pi
+from reals import pi as real_pi
+
+print('{:.20f}'.format(math_pi))
+print('{:.20f}'.format(real_pi))
+```
+
 
 Get the first [10 best rational approximations](https://www.johndcook.com/blog/2018/05/22/best-approximations-for-pi/) to $\pi$:
 ```

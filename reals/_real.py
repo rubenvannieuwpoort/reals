@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from reals._term import Term
+from reals._inverse import InverseComputation
 from reals._computation import Computation
 from reals._homographic import Homographic
 from reals._compare import compare, ComparisonResult
@@ -69,6 +70,9 @@ class Real:
     @staticmethod
     def from_iter(i: Iterator[Term]) -> 'Real':
         return Real(i)
+
+    def inverse(self):
+        return Real(InverseComputation(self.compute()))
 
     def __neg__(self):
         return Real(AlgebraicComputation(self.compute(), (-1, 0, 0, 1)))

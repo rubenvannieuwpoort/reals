@@ -8,7 +8,7 @@ from enum import Enum, auto
 from fractions import Fraction
 
 
-EPSILON = Fraction(1, 100)
+EPSILON = Fraction(1, 100000)
 
 
 class ComparisonResult(Enum):

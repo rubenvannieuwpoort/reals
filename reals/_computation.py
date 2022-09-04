@@ -1,6 +1,6 @@
-from reals._term import Term
+import reals._term
 
 from typing import Iterator
 
 
-Computation = Iterator[Term]
+Computation = Iterator[reals._term.Term]

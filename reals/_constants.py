@@ -1,11 +1,11 @@
-from reals._real import Real
-from reals._term import Term
-from reals._normalize import normalize
+import reals._real
+import reals._term
+import reals._normalize
 
 from typing import Generator
 
 
-def e_term_generator() -> Generator[Term, None, None]:
+def e_term_generator() -> Generator[reals._term.Term, None, None]:
     yield 2
     k = 2
     while True:
@@ -15,10 +15,10 @@ def e_term_generator() -> Generator[Term, None, None]:
         k += 2
 
 
-e = Real(e_term_generator())
+e = reals._real.Real(e_term_generator())
 
 
-def pi_term_generator() -> Generator[Term, None, None]:
+def pi_term_generator() -> Generator[reals._term.Term, None, None]:
     yield (0, 4)
 
     m = 1
@@ -29,14 +29,14 @@ def pi_term_generator() -> Generator[Term, None, None]:
         n += m
 
 
-pi_unnormalized = Real(pi_term_generator())
+pi_unnormalized = reals._real.Real(pi_term_generator())
 
-pi = normalize(pi_unnormalized)
+pi = reals._normalize.normalize(pi_unnormalized)
 
 
-def phi_term_generator() -> Generator[Term, None, None]:
+def phi_term_generator() -> Generator[reals._term.Term, None, None]:
     while True:
         yield 1
 
 
-phi = Real(phi_term_generator())
+phi = reals._real.Real(phi_term_generator())

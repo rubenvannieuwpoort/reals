@@ -1,11 +1,13 @@
-from typing import Generator
-from reals._real import Real, CachedComputation
-from reals._algebraic_computation import AlgebraicComputation
-from reals._quadratic_computation import QuadraticComputation
-from fractions import Fraction
+from reals import Real, sqrt
 from reals.approximation import Approximation
 
+from reals._real import CachedComputation
+from reals._algebraic_computation import AlgebraicComputation
+from reals._quadratic_computation import QuadraticComputation
+
 import pytest
+from typing import Generator
+from fractions import Fraction
 
 
 def test_real_cache_is_shared() -> None:
@@ -114,3 +116,8 @@ def test_generalized_continued_fractions() -> None:
     assert hi
 
     assert lo < 2 and 2 < hi
+
+
+def test_sqrt_of_square_fractions() -> None:
+    x = sqrt(Fraction(16, 9))
+    assert x == Real.from_fraction(Fraction(4, 3))

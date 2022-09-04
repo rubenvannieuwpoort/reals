@@ -1,17 +1,20 @@
-from reals._term import Term
-from reals._utils import sign
-from reals._computation import Computation
-from reals._bihomographic import Bihomographic
+import reals._term
+import reals._utils
+import reals._computation
+import reals._bihomographic
 
 
 DEFAULT_MAX_INGESTIONS = 5
 
 
-class QuadraticComputation(Computation):
-    def __init__(self, x: Computation, y: Computation, coeffs: tuple[int, int, int, int, int, int, int, int],
+class QuadraticComputation(reals._computation.Computation):
+    def __init__(self,
+                 x: reals._computation.Computation,
+                 y: reals._computation.Computation,
+                 coeffs: tuple[int, int, int, int, int, int, int, int],
                  max_ingestions=DEFAULT_MAX_INGESTIONS) -> None:
         a, b, c, d, e, f, g, h = coeffs
-        self.state = Bihomographic(a, b, c, d, e, f, g, h)
+        self.state = reals._bihomographic.Bihomographic(a, b, c, d, e, f, g, h)
         self.x, self.y = x, y
         self.terminated = False
         self.max_ingestions = max_ingestions
@@ -28,7 +31,7 @@ class QuadraticComputation(Computation):
         except StopIteration:
             self.terminated = self.state.y_ingest_inf()
 
-    def __next__(self) -> Term:
+    def __next__(self) -> reals._term.Term:
         if self.terminated:
             raise StopIteration()
 
@@ -45,8 +48,9 @@ class QuadraticComputation(Computation):
             d01 = self.state.e + self.state.g
             d11 = self.state.e
 
-            s00 = sign(d00)
-            if d00 != 0 and sign(d01) != s00 or sign(d10) != s00 or sign(d11) != s00:
+            s00 = reals._utils.sign(d00)
+            if (d00 != 0 and reals._utils.sign(d01) != s00 or
+                    reals._utils.sign(d10) != s00 or reals._utils.sign(d11) != s00):
                 x_ingest = True
                 y_ingest = True
             else:

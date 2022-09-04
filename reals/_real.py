@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from reals._term import Term
-from reals._computation import Computation
-from reals._homographic import Homographic
-from reals._compare import compare, ComparisonResult
-from reals._algebraic_computation import AlgebraicComputation
-from reals._quadratic_computation import QuadraticComputation
+import reals._term
+import reals._inverse
+import reals._computation
+import reals._homographic
+import reals._algebraic_computation
+import reals._quadratic_computation
 
 from decimal import Decimal
 from fractions import Fraction
@@ -14,13 +14,13 @@ from typing import Generator, Iterable, Iterator, Union
 DEFAULT_DIGITS = 5
 
 
-class CachedComputation(Computation):
-    def __init__(self, iterator: Iterator[Term], cache: list[Term]):
+class CachedComputation(reals._computation.Computation):
+    def __init__(self, iterator: Iterator[reals._term.Term], cache: list[reals._term.Term]):
         self.cache = cache
         self.iterator = iterator
         self.index = 0
 
-    def __next__(self) -> Term:
+    def __next__(self) -> reals._term.Term:
         assert self.index <= len(self.cache)
 
         if self.index == len(self.cache):
@@ -32,11 +32,11 @@ class CachedComputation(Computation):
 
 
 class Real:
-    def __init__(self, it: Union[Iterator[Term], Iterable[Term]]) -> None:
+    def __init__(self, it: Union[Iterator[reals._term.Term], Iterable[reals._term.Term]]) -> None:
         self.iterator = iter(it)
-        self.cache: list[Term] = []
+        self.cache: list[reals._term.Term] = []
 
-    def compute(self) -> Computation:
+    def compute(self) -> reals._computation.Computation:
         return CachedComputation(self.iterator, self.cache)
 
     @staticmethod
@@ -45,7 +45,7 @@ class Real:
             return Real.from_int(x)
 
         p, q = x.as_integer_ratio()
-        return Real(AlgebraicComputation(iter([]), (p, p, q, q)))
+        return Real(reals._algebraic_computation.AlgebraicComputation(iter([]), (p, p, q, q)))
 
     @staticmethod
     def from_int(n: int) -> 'Real':
@@ -54,31 +54,34 @@ class Real:
     @staticmethod
     def from_fraction(f: Fraction) -> 'Real':
         p, q = f.as_integer_ratio()
-        return Real(AlgebraicComputation(iter([]), (p, p, q, q)))
+        return Real(reals._algebraic_computation.AlgebraicComputation(iter([]), (p, p, q, q)))
 
     @staticmethod
     def from_decimal(d: Decimal) -> 'Real':
         p, q = d.as_integer_ratio()
-        return Real(AlgebraicComputation(iter([]), (p, p, q, q)))
+        return Real(reals._algebraic_computation.AlgebraicComputation(iter([]), (p, p, q, q)))
 
     @staticmethod
     def from_float(f: float) -> 'Real':
         p, q = f.as_integer_ratio()
-        return Real(AlgebraicComputation(iter([]), (p, p, q, q)))
+        return Real(reals._algebraic_computation.AlgebraicComputation(iter([]), (p, p, q, q)))
 
     @staticmethod
-    def from_iter(i: Iterator[Term]) -> 'Real':
+    def from_iter(i: Iterator[reals._term.Term]) -> 'Real':
         return Real(i)
 
+    def inverse(self):
+        return Real(reals._inverse.InverseComputation(self.compute()))
+
     def __neg__(self):
-        return Real(AlgebraicComputation(self.compute(), (-1, 0, 0, 1)))
+        return Real(reals._algebraic_computation.AlgebraicComputation(self.compute(), (-1, 0, 0, 1)))
 
     def __mul__(self, other):
         if isinstance(other, Fraction) or isinstance(other, int):
             p, q = other.as_integer_ratio()
-            return Real(AlgebraicComputation(self.compute(), (p, 0, 0, q)))
+            return Real(reals._algebraic_computation.AlgebraicComputation(self.compute(), (p, 0, 0, q)))
         elif isinstance(other, Real):
-            return Real(QuadraticComputation(
+            return Real(reals._quadratic_computation.QuadraticComputation(
                     self.compute(),
                     other.compute(),
                     (1, 0, 0, 0, 0, 0, 0, 1)))
@@ -88,68 +91,71 @@ class Real:
     def __rmul__(self, other):
         if isinstance(other, Fraction) or isinstance(other, int):
             p, q = other.as_integer_ratio()
-            return Real(AlgebraicComputation(self.compute(), (p, 0, 0, q)))
+            return Real(reals._algebraic_computation.AlgebraicComputation(self.compute(), (p, 0, 0, q)))
         else:
             raise TypeError()
 
     def __add__(self, other):
         if isinstance(other, Fraction) or isinstance(other, int):
             p, q = other.as_integer_ratio()
-            return Real(AlgebraicComputation(self.compute(), (q, p, 0, q)))
+            return Real(reals._algebraic_computation.AlgebraicComputation(self.compute(), (q, p, 0, q)))
         elif isinstance(other, Real):
-            return Real(QuadraticComputation(self.compute(), other.compute(),
-                                             (0, 1, 1, 0, 0, 0, 0, 1)))
+            return Real(reals._quadratic_computation.QuadraticComputation(self.compute(), other.compute(),
+                                                                          (0, 1, 1, 0, 0, 0, 0, 1)))
         else:
             raise TypeError()
 
     def __radd__(self, other):
         if isinstance(other, Fraction) or isinstance(other, int):
             p, q = other.as_integer_ratio()
-            return Real(AlgebraicComputation(self.compute(), (q, p, 0, q)))
+            return Real(reals._algebraic_computation.AlgebraicComputation(self.compute(), (q, p, 0, q)))
         else:
             raise TypeError()
 
     def __sub__(self, other):
         if isinstance(other, Fraction) or isinstance(other, int):
             p, q = other.as_integer_ratio()
-            return Real(AlgebraicComputation(self.compute(), (q, -p, 0, q)))
+            return Real(reals._algebraic_computation.AlgebraicComputation(self.compute(), (q, -p, 0, q)))
         elif isinstance(other, Real):
-            return Real(QuadraticComputation(self.compute(),
-                                             other.compute(), (0, 1, -1, 0, 0, 0, 0, 1)))
+            return Real(reals._quadratic_computation.QuadraticComputation(self.compute(),
+                                                                          other.compute(), (0, 1, -1, 0, 0, 0, 0, 1)))
         else:
             raise TypeError()
 
     def __rsub__(self, other):
         if isinstance(other, Fraction) or isinstance(other, int):
             p, q = other.as_integer_ratio()
-            return Real(AlgebraicComputation(self.compute(), (-q, p, 0, q)))
+            return Real(reals._algebraic_computation.AlgebraicComputation(self.compute(), (-q, p, 0, q)))
         else:
             raise TypeError()
 
     def __truediv__(self, other):
         if isinstance(other, Fraction) or isinstance(other, int):
             p, q = other.as_integer_ratio()
-            return Real(AlgebraicComputation(self.compute(), (q, 0, 0, p)))
+            return Real(reals._algebraic_computation.AlgebraicComputation(self.compute(), (q, 0, 0, p)))
         elif isinstance(other, Real):
-            return Real(QuadraticComputation(self.compute(),
-                                             other.compute(), (0, 1, 0, 0, 0, 0, 1, 0)))
+            return Real(reals._quadratic_computation.QuadraticComputation(self.compute(),
+                                                                          other.compute(), (0, 1, 0, 0, 0, 0, 1, 0)))
         else:
             raise TypeError()
 
     def __rtruediv__(self, other):
         if isinstance(other, Fraction) or isinstance(other, int):
             p, q = other.as_integer_ratio()
-            return Real(AlgebraicComputation(self.compute(), (0, p, q, 0)))
+            return Real(reals._algebraic_computation.AlgebraicComputation(self.compute(), (0, p, q, 0)))
         else:
             raise TypeError()
 
     def __lt__(self, other: Real) -> bool:
+        from reals._compare import compare, ComparisonResult
         return compare(self, other) == ComparisonResult.SMALLER
 
     def __gt__(self, other: Real) -> bool:
+        from reals._compare import compare, ComparisonResult
         return compare(self, other) == ComparisonResult.GREATER
 
     def __eq__(self, other) -> bool:
+        from reals._compare import compare, ComparisonResult
         return compare(self, other) == ComparisonResult.UNKNOWN
 
     def __format__(self, spec):
@@ -166,7 +172,7 @@ class Real:
                 f'(approximate value: {str(self)})>')
 
 
-def digits(c: Computation, n: int) -> str:
+def digits(c: reals._computation.Computation, n: int) -> str:
     digit_generator = digits_helper(c)
     digits = str(next(digit_generator))
     try:
@@ -178,8 +184,8 @@ def digits(c: Computation, n: int) -> str:
     return digits
 
 
-def digits_helper(c: Computation) -> Generator[str, None, None]:
-    h = Homographic(1, 0, 0, 1)
+def digits_helper(c: reals._computation.Computation) -> Generator[str, None, None]:
+    h = reals._homographic.Homographic(1, 0, 0, 1)
     terminated = False
     is_negative = False
 

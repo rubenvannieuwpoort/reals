@@ -1,16 +1,16 @@
-from reals._real import Real
-from reals._homographic import Homographic
-from reals._computation import Computation
+import reals._real
+import reals._homographic
+import reals._computation
 
 from fractions import Fraction
 from typing import Optional, Union
 
 
 class Approximation:
-    def __init__(self, x: Union[Real, Computation]):
+    def __init__(self, x: Union[reals._real.Real, reals._computation.Computation]):
         self.ingestions = 0
-        self.state = Homographic(1, 0, 0, 1)
-        if isinstance(x, Real):
+        self.state = reals._homographic.Homographic(1, 0, 0, 1)
+        if isinstance(x, reals._real.Real):
             self.computation = x.compute()
         else:
             self.computation = x
@@ -104,7 +104,7 @@ class Approximation:
         return lo
 
 
-def best_rational_approximations(x: Real, n: int):
+def best_rational_approximations(x: reals._real.Real, n: int):
     a = Approximation(x)
 
     result: list[Fraction] = []

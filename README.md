@@ -18,7 +18,7 @@ Print [10000 digits](https://www.math.utah.edu/~pa/math/e.html) of Euler's numbe
 ```
 from reals import e
 
-print('{:.f10000}.format(e))
+print('{:.10000f}'.format(e))
 ```
 
 Comparing the first 20 digits of `reals.pi` and `math.pi`:

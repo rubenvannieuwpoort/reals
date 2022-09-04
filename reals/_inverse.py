@@ -1,16 +1,16 @@
-from reals._computation import Computation
-from reals._term import Term, expand_term
+import reals._computation
+import reals._term
 
 from typing import Optional
 
 
-class InverseComputation(Computation):
-    def __init__(self, computation: Computation):
+class InverseComputation(reals._computation.Computation):
+    def __init__(self, computation: reals._computation.Computation):
         self.computation = computation
         self.first = True
-        self.cached_term: Optional[Term] = None
+        self.cached_term: Optional[reals._term.Term] = None
 
-    def __next__(self) -> Term:
+    def __next__(self) -> reals._term.Term:
         if self.cached_term:
             term = self.cached_term
             self.cached_term = None
@@ -20,7 +20,7 @@ class InverseComputation(Computation):
         if self.first:
             self.first = False
 
-            n, _ = expand_term(next_term)
+            n, _ = reals._term.expand_term(next_term)
 
             if n == 0:
                 return next(self.computation)

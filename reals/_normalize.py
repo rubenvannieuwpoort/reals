@@ -1,9 +1,10 @@
-from reals._real import Real
-from reals._algebraic_computation import AlgebraicComputation
+import reals._real
+import reals._algebraic_computation
 
 
 DEFAULT_MAX_INGESTIONS = 100
 
 
-def normalize(x: Real, max_ingestions=DEFAULT_MAX_INGESTIONS) -> Real:
-    return Real(AlgebraicComputation(x.compute(), (1, 0, 0, 1), max_ingestions))
+def normalize(x: reals._real.Real, max_ingestions=DEFAULT_MAX_INGESTIONS) -> reals._real.Real:
+    return reals._real.Real(
+        reals._algebraic_computation.AlgebraicComputation(x.compute(), (1, 0, 0, 1), max_ingestions))

@@ -1,20 +1,19 @@
-from reals._computation import Computation
-from reals._homographic import Homographic
-from reals._utils import sign
-from reals._term import Term
-
+import reals._term
+import reals._utils
+import reals._computation
+import reals._homographic
 
 DEFAULT_MAX_INGESTIONS = 15
 
 
-class AlgebraicComputation(Computation):
+class AlgebraicComputation(reals._computation.Computation):
     def __init__(
             self,
-            x: Computation,
+            x: reals._computation.Computation,
             coeffs: tuple[int, int, int, int],
             max_ingestions=DEFAULT_MAX_INGESTIONS) -> None:
         a, b, c, d = coeffs
-        self.state = Homographic(a, b, c, d)
+        self.state = reals._homographic.Homographic(a, b, c, d)
         self.x = x
         self.max_ingestions = max_ingestions
         self.terminated = False
@@ -25,12 +24,7 @@ class AlgebraicComputation(Computation):
         except StopIteration:
             self.terminated = self.state.ingest_inf()
 
-    # def check_termination(self) -> None:
-    #     self.terminated = self.state.is_terminated()
-    #     if self.terminated:
-    #         raise StopIteration()
-
-    def __next__(self) -> Term:
+    def __next__(self) -> reals._term.Term:
         if self.terminated:
             raise StopIteration()
 
@@ -38,7 +32,8 @@ class AlgebraicComputation(Computation):
 
         ingestions = 0
         while ingestions < self.max_ingestions:
-            if self.state.c != 0 and sign(self.state.c) == sign(self.state.c + self.state.d):
+            if (self.state.c != 0 and
+                    reals._utils.sign(self.state.c) == reals._utils.sign(self.state.c + self.state.d)):
                 n1 = self.state.a // self.state.c
                 n2 = (self.state.a + self.state.b) // (self.state.c + self.state.d)
 

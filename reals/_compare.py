@@ -1,16 +1,14 @@
 from __future__ import annotations
-
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from reals._real import Real
-    from reals.approximation import Approximation
 
 from enum import Enum, auto
 from fractions import Fraction
 
 
-EPSILON = Fraction(1, 100000)
+EPSILON = Fraction(1, 100)
 
 
 class ComparisonResult(Enum):
@@ -19,7 +17,9 @@ class ComparisonResult(Enum):
     UNKNOWN = auto()
 
 
+# TODO(Ruben): this is very ugly, needs a rewrite
 def compare(x: Real, y: Real, epsilon: Fraction = EPSILON) -> ComparisonResult:
+    from reals.approximation import Approximation
     x_approximation = Approximation(x)
     x_approximation.improve()
     y_approximation = Approximation(y)
@@ -50,7 +50,7 @@ def compare(x: Real, y: Real, epsilon: Fraction = EPSILON) -> ComparisonResult:
         elif y_eps > epsilon / 2:
             y_approximation.improve()
 
-        if x_eps and x_eps < epsilon / 2 and y_eps and y_eps < epsilon / 2:
+        if x_eps is not None and x_eps < epsilon / 2 and y_eps is not None and y_eps < epsilon / 2:
             break
 
     return ComparisonResult.UNKNOWN

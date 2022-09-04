@@ -1,12 +1,13 @@
-from typing import Generator
-from reals._real import Real, CachedComputation
-from reals._sqrt import sqrt
-from reals._algebraic_computation import AlgebraicComputation
-from reals._quadratic_computation import QuadraticComputation
-from fractions import Fraction
+from reals import Real, sqrt
 from reals.approximation import Approximation
 
+from reals._real import CachedComputation
+from reals._algebraic_computation import AlgebraicComputation
+from reals._quadratic_computation import QuadraticComputation
+
 import pytest
+from typing import Generator
+from fractions import Fraction
 
 
 def test_real_cache_is_shared() -> None:

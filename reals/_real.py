@@ -226,3 +226,17 @@ def digits_helper(c: reals._computation.Computation) -> Generator[str, None, Non
         except StopIteration:
             h.ingest_inf()
             terminated = True
+
+
+Number = Union[int, Decimal, Fraction, Real]
+
+
+def ensure_real(x: Number) -> Real:
+    if isinstance(x, Real):
+        return x
+    if isinstance(x, Fraction):
+        return Real.from_fraction(x)
+    if isinstance(x, int):
+        return Real.from_int(x)
+    if isinstance(x, Decimal):
+        return Real.from_decimal(x)

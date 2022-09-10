@@ -39,14 +39,18 @@ class QuadraticComputation(reals._computation.Computation):
                     self.state.g == 0 and self.state.h == 0)
 
         ingestions = 0
-        while ingestions < self.max_ingestions:
-            x_ingest = False
-            y_ingest = False
-
+        while True:
             d00 = self.state.e + self.state.f + self.state.g + self.state.h
             d10 = self.state.e + self.state.f
             d01 = self.state.e + self.state.g
             d11 = self.state.e
+
+            if (ingestions > self.max_ingestions and
+                    (d00 != 0 and d10 != 0 and d01 != 0 and d11 != 0)):
+                break
+
+            x_ingest = False
+            y_ingest = False
 
             s00 = reals._utils.sign(d00)
             if (d00 != 0 and reals._utils.sign(d01) != s00 or

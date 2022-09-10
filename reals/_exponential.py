@@ -1,4 +1,5 @@
-from reals._real import Real
+# TODO(Ruben): this needs to be rewritten to use absolute imports
+from reals._real import Real, Number, ensure_real
 from reals._normalize import normalize
 from reals._computation import Computation
 from reals.approximation import Approximation
@@ -22,7 +23,8 @@ def exp_int(n: int) -> Real:
     return normalize(Real(AlgebraicComputation(computation, (2 + n, n_squared, 2 - n, n_squared))))
 
 
-def exp_frac(x: Real) -> Real:
+# compute exp(x) for small negative x
+def exp_small(x: Real) -> Real:
     return Real(ExponentialComputation(x))
 
 
@@ -36,6 +38,10 @@ def pow(x: Real, n: int) -> Real:
     return result
 
 
+# compute exp(x) for small negative x
+# Technically this method will converge for any x, the negativeness is needed to make the Taylor series
+# alternating so that it can be used to obtain both lower and upper bounds. The smallness of x is needed
+# to improve the convergence.
 class ExponentialComputation(Computation):
     def __init__(self, x: Real) -> None:
         self.x = x
@@ -67,15 +73,25 @@ class ExponentialComputation(Computation):
                 next(self.hi_comp)
 
 
-def exp(x: Real | int) -> Real:
+# note that this might not be ideal to calculate exp for x of type Real which turns out to be integer
+# (e.g. x = sqrt(3) * sqrt(3))
+def exp(x: Number) -> Real:
+    # if x is an integer it can be computed more efficiently
     if isinstance(x, int):
         return exp_int(x)
+
+    x = ensure_real(x)
+
+    # get numbers n and rest such that x = n + rest, n is an integer, and rest is a small negative number
+    # more specifically, calculate n = ceil(upper_bound(x)) and rest = x - n
     epsilon = Fraction(1, 1000)
     a = Approximation(x)
     a.improve_epsilon(epsilon)
     upper_bound = a.upper_bound_fraction()
     assert upper_bound
     p, q = upper_bound.as_integer_ratio()
+
     n = (p + q - 1) // q
     rest = x - n
-    return exp_int(n) * exp_frac(rest)
+
+    return exp_int(n) * exp_small(rest)

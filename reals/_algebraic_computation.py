@@ -50,7 +50,7 @@ class AlgebraicComputation(reals._computation.Computation):
         n1 = self.state.a // self.state.c
         n2 = (self.state.a + self.state.b) // (self.state.c + self.state.d)
         n = min(n1, n2)
-        m = max(n1, n1) - n + 1
+        m = max(n1, n2) - n + 1
         self.terminated = self.state.emit((n, m))
         assert not self.terminated
         return (n, m)

@@ -4,7 +4,7 @@ import reals._computation
 import reals._bihomographic
 
 
-DEFAULT_MAX_INGESTIONS = 5
+DEFAULT_MAX_INGESTIONS = 15
 
 
 class QuadraticComputation(reals._computation.Computation):
@@ -16,8 +16,9 @@ class QuadraticComputation(reals._computation.Computation):
         a, b, c, d, e, f, g, h = coeffs
         self.state = reals._bihomographic.Bihomographic(a, b, c, d, e, f, g, h)
         self.x, self.y = x, y
-        self.terminated = False
         self.max_ingestions = max_ingestions
+        self.terminated = False
+        self.simple_mode = True
 
     def ingest_x(self) -> None:
         try:
@@ -31,6 +32,9 @@ class QuadraticComputation(reals._computation.Computation):
         except StopIteration:
             self.terminated = self.state.y_ingest_inf()
 
+    def close_enough(self, a: int, b: int) -> bool:
+        return (a == b) or not self.simple_mode and (a == b + 1 or b == a + 1)
+
     def __next__(self) -> reals._term.Term:
         if self.terminated:
             raise StopIteration()
@@ -40,56 +44,52 @@ class QuadraticComputation(reals._computation.Computation):
 
         ingestions = 0
         while True:
+            self.simple_mode = self.simple_mode and ingestions < self.max_ingestions
+
+            n00 = self.state.a + self.state.b + self.state.c + self.state.d
             d00 = self.state.e + self.state.f + self.state.g + self.state.h
+            n10 = self.state.a + self.state.b
             d10 = self.state.e + self.state.f
+            n01 = self.state.a + self.state.c
             d01 = self.state.e + self.state.g
+            n11 = self.state.a
             d11 = self.state.e
 
-            if (ingestions > self.max_ingestions and
-                    (d00 != 0 and d10 != 0 and d01 != 0 and d11 != 0)):
-                break
+            x_ingest = (d00 == 0 or d10 == 0 or d11 == 0 or
+                        reals._utils.sign(d00) != reals._utils.sign(d10) or
+                        reals._utils.sign(d01) != reals._utils.sign(d11))
+            y_ingest = (d00 == 0 or d01 == 0 or d11 == 0 or
+                        reals._utils.sign(d00) != reals._utils.sign(d01) or
+                        reals._utils.sign(d10) != reals._utils.sign(d11))
 
-            x_ingest = False
-            y_ingest = False
+            if not x_ingest and not y_ingest:
+                q00 = n00 // d00
+                q01 = n01 // d01
+                q10 = n10 // d10
+                q11 = n11 // d11
+                too_far = not self.close_enough(q10, q01)
+                x_ingest = too_far or not self.close_enough(q00, q10) or not self.close_enough(q01, q11)
+                y_ingest = too_far or not self.close_enough(q00, q01) or not self.close_enough(q10, q11)
 
-            s00 = reals._utils.sign(d00)
-            if (d00 != 0 and reals._utils.sign(d01) != s00 or
-                    reals._utils.sign(d10) != s00 or reals._utils.sign(d11) != s00):
-                x_ingest = True
-                y_ingest = True
-            else:
-                q00 = (self.state.a + self.state.b + self.state.c + self.state.d) // d00
-                q11 = self.state.a // d11
-
-                if q00 != q11:
-                    x_ingest = True
-                    y_ingest = True
+            if not x_ingest and not y_ingest:
+                if self.simple_mode:
+                    self.terminated = self.state.emit(q00)
+                    return q00
                 else:
-                    q01 = (self.state.a + self.state.c) // d01
-                    q10 = (self.state.a + self.state.b) // d10
-                    x_ingest = q00 != q10 or q01 != q11
-                    y_ingest = q00 != q01 or q10 != q11
+                    n = min(q00, q10, q01, q11)
+                    m = max(q00, q10, q01, q11) - n + 1
+                    if m == 1:
+                        self.simple_mode = True
+                        self.terminated = self.state.emit(n)
+                        return n
+                    self.terminated = self.state.emit((n, m))
+                    assert not self.terminated
+                    return (n, m)
 
-            if x_ingest or y_ingest:
-                ingestions += 1
-                if x_ingest:
-                    self.ingest_x()
-                if y_ingest:
-                    self.ingest_y()
-                if self.terminated:
-                    raise StopIteration()
-                continue
-
-            self.terminated = self.state.emit(q00)
-            return q00
-
-        d00 = self.state.e + self.state.f + self.state.g + self.state.h
-        q00 = (self.state.a + self.state.b + self.state.c + self.state.d) // d00
-        q10 = (self.state.a + self.state.b) // (self.state.e + self.state.f)
-        q01 = (self.state.a + self.state.c) // (self.state.e + self.state.g)
-        q11 = self.state.a // self.state.e
-
-        n = min(q00, q10, q01, q11)
-        m = max(q00, q10, q01, q11) - n + 1
-        self.terminated = self.state.emit((n, m))
-        return (n, m)
+            ingestions += 1
+            if x_ingest:
+                self.ingest_x()
+            if y_ingest:
+                self.ingest_y()
+            if self.terminated:
+                raise StopIteration()

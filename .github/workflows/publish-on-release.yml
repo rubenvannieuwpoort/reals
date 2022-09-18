@@ -1,14 +1,12 @@
 name: Publish on release
 
 on:
-  push:
-    tags:
-     - 'v*'
+  release:
+    types: [published]
 
 jobs:
   build-n-publish:
-    name: Build and publish to Test PyPI
-    if: startsWith(github.ref, 'refs/tags/v')
+    name: Build and publish to PyPI
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -22,19 +20,15 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install tox
+        python -m pip install tox build --user
     - name: Run tox
       run: |
         tox
-    - name: Install pypa/build
-      run: |
-        python -m pip install build --user
     - name: Build a binary wheel and a source tarball
       run: |
         python -m build --sdist --wheel --outdir dist/
-    - name: Publish distribution to Test PyPI
+    - name: Publish distribution to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
-        password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-        repository_url: https://test.pypi.org/legacy/
+        password: ${{ secrets.PYPI_API_TOKEN }}
 

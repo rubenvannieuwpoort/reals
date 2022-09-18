@@ -17,6 +17,7 @@ class AlgebraicComputation(reals._computation.Computation):
         self.x = x
         self.max_ingestions = max_ingestions
         self.terminated = False
+        self.simple_mode = True
 
     def ingest_x(self) -> None:
         try:
@@ -31,26 +32,28 @@ class AlgebraicComputation(reals._computation.Computation):
         assert not (self.state.c == 0 and self.state.d == 0)
 
         ingestions = 0
-        while ingestions < self.max_ingestions:
+        while True:
+            self.simple_mode = self.simple_mode and ingestions <= self.max_ingestions
+
             if (self.state.c != 0 and
                     reals._utils.sign(self.state.c) == reals._utils.sign(self.state.c + self.state.d)):
                 n1 = self.state.a // self.state.c
                 n2 = (self.state.a + self.state.b) // (self.state.c + self.state.d)
 
                 if n1 == n2:
+                    self.simple_mode = True
                     self.terminated = self.state.emit(n1)
                     return n1
+                elif not self.simple_mode and n1 == n2 + 1 or n1 + 1 == n2:
+                    n = min(n1, n2)
+                    m = max(n1, n2) - n + 1
+                    assert m != 1
+                    self.terminated = self.state.emit((n, m))
+                    assert not self.terminated
+                    return (n, m)
 
             self.ingest_x()
             if self.terminated:
                 raise StopIteration()
 
             ingestions += 1
-
-        n1 = self.state.a // self.state.c
-        n2 = (self.state.a + self.state.b) // (self.state.c + self.state.d)
-        n = min(n1, n2)
-        m = max(n1, n1) - n + 1
-        self.terminated = self.state.emit((n, m))
-        assert not self.terminated
-        return (n, m)

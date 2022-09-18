@@ -167,9 +167,9 @@ class Real:
     def __str__(self):
         return digits(self.compute(), DEFAULT_DIGITS)
 
-    def __repr__(self):
-        return (f'<{self.__class__.__module__}.{self.__class__.__name__} object at {hex(id(self))} '
-                f'(approximate value: {str(self)})>')
+    # def __repr__(self):
+    #     return (f'<{self.__class__.__module__}.{self.__class__.__name__} object at {hex(id(self))} '
+    #             f'(approximate value: {str(self)})>')
 
 
 def digits(c: reals._computation.Computation, n: int) -> str:

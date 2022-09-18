@@ -1,6 +1,6 @@
 # reals
 
-[![Build status](https://github.com/rubenvannieuwpoort/reals/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/rubenvannieuwpoort/reals/actions) [![PyPI version](https://badge.fury.io/py/reals.svg)](https://pypi.org/project/reals/)
+[![Build status](https://github.com/rubenvannieuwpoort/reals/actions/workflows/verify-on-push.yml/badge.svg?branch=master)](https://github.com/rubenvannieuwpoort/reals/actions) [![PyPI version](https://badge.fury.io/py/reals.svg)](https://pypi.org/project/reals/)
 
 A lightweight python3 library for arithmetic with real numbers.
 

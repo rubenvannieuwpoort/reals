@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name='reals',
-    version='0.0.1-alpha',
+    version='0.0.1',
     author='Ruben van Nieuwpoort',
     author_email='ruben@vannieuwpoort.dev',
     license='MIT',

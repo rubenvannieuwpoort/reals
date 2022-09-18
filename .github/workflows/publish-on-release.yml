@@ -1,10 +1,14 @@
-name: Continuous integration
+name: Publish on release
 
-on: push
+on:
+  push:
+    tags:
+     - 'v*'
 
 jobs:
-  verify:
-    name: Verify
+  build-n-publish:
+    name: Build and publish to Test PyPI
+    if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -22,26 +26,12 @@ jobs:
     - name: Run tox
       run: |
         tox
-
-  build-n-publish:
-    name: Build and publish to Test PyPI
-    if: startsWith(github.ref, 'refs/tags/v')
-    needs: verify
-    runs-on: ubuntu-latest
-    steps:
     - name: Install pypa/build
-      run: >-
-        python -m
-        pip install
-        build
-        --user
+      run: |
+        python -m pip install build --user
     - name: Build a binary wheel and a source tarball
-      run: >-
-        python -m
-        build
-        --sdist
-        --wheel
-        --outdir dist/
+      run: |
+        python -m build --sdist --wheel --outdir dist/
     - name: Publish distribution to Test PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:

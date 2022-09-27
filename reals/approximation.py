@@ -111,7 +111,7 @@ def best_rational_approximations(x: reals._real.Real, n: int):
     for _ in range(0, n):
         a.improve()
         rational_approximation = a.as_fraction()
-        assert rational_approximation
+        assert rational_approximation is not None
         result.append(rational_approximation)
 
     return result

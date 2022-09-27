@@ -1,5 +1,5 @@
-from reals import Real, sqrt
-from reals.approximation import Approximation
+from reals import Real, sqrt, e, pi
+from reals.approximation import Approximation, best_rational_approximations
 
 from reals._real import CachedComputation
 from reals._algebraic_computation import AlgebraicComputation
@@ -121,3 +121,7 @@ def test_generalized_continued_fractions() -> None:
 def test_sqrt_of_square_fractions() -> None:
     x = sqrt(Fraction(16, 9))
     assert x == Real.from_fraction(Fraction(4, 3))
+
+
+def test_best_rational_approximations() -> None:
+    best_rational_approximations(e / pi, 10)

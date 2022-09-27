@@ -158,6 +158,9 @@ class Real:
         from reals._compare import compare, ComparisonResult
         return compare(self, other) == ComparisonResult.UNKNOWN
 
+    def evaluate(self, n: int) -> str:
+        return rounded_digits(self, n)
+
     def __format__(self, spec):
         assert spec[0] == '.'
         assert spec[-1] == 'f'

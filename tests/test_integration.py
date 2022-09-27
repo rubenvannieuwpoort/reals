@@ -1,6 +1,12 @@
+from reals import pi
 from reals import sin, sinh, csc, csch, cos, cosh, sec, sech, tan, tanh, cot, coth
 
+from math import pi as math_pi
 from fractions import Fraction
+
+
+def test_closest_float() -> None:
+    assert pi.to_float() == math_pi
 
 
 def test_sin_int() -> None:

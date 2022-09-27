@@ -161,6 +161,13 @@ class Real:
     def evaluate(self, n: int) -> str:
         return rounded_digits(self, n)
 
+    def to_decimal(self, n: int) -> Decimal:
+        return Decimal(self.evaluate(n))
+
+    def to_float(self) -> float:
+        import reals.approximation  # this is ugly but necessary to avoid circular imports
+        return reals.approximation.closest_float(self)  # noqa
+
     def __format__(self, spec):
         assert spec[0] == '.'
         assert spec[-1] == 'f'

@@ -162,18 +162,23 @@ class Real:
         assert spec[0] == '.'
         assert spec[-1] == 'f'
         num_digits = int(spec[1:-1])
-        return digits(self.compute(), num_digits)
+        return rounded_digits(self, num_digits)
 
     def __str__(self):
-        return digits(self.compute(), DEFAULT_DIGITS)
+        return rounded_digits(self, DEFAULT_DIGITS)
 
     # def __repr__(self):
     #     return (f'<{self.__class__.__module__}.{self.__class__.__name__} object at {hex(id(self))} '
     #             f'(approximate value: {str(self)})>')
 
 
-def digits(c: reals._computation.Computation, n: int) -> str:
-    digit_generator = digits_helper(c)
+def rounded_digits(x: Real, n: int) -> str:
+    rounding_constant = Fraction(1, 2 * 10**n)
+    return digits(x + rounding_constant, n)
+
+
+def digits(x: Real, n: int) -> str:
+    digit_generator = digits_helper(x.compute())
     digits = str(next(digit_generator))
     try:
         digits += '.'

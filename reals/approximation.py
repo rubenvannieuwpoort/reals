@@ -104,6 +104,10 @@ class Approximation:
         return lo
 
 
+def closest_float(x: reals._real.Real) -> float:
+    return Approximation(x).closest_float()
+
+
 def best_rational_approximations(x: reals._real.Real, n: int):
     a = Approximation(x)
 

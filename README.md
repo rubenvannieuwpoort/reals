@@ -1,26 +1,13 @@
-> Continued fractions are not only perfectly amenable to arithmetic, they are
-amenable to perfect arithmetic.
-
- -- Bill Gosper
-
 <img src="media/logo.png" alt="reals logo" width="250px"/>
 
 A lightweight python3 library for arithmetic with real numbers.
 
 [![Build status](https://github.com/rubenvannieuwpoort/reals/actions/workflows/verify-on-push.yml/badge.svg?branch=master)](https://github.com/rubenvannieuwpoort/reals/actions) [![PyPI version](https://badge.fury.io/py/reals.svg)](https://pypi.org/project/reals/)
 
-# Installation guide
-
-## Using pip
-
-```
-pip install reals
-```
-
 
 # What is Reals?
 
-'Reals' is a lightweight Python library for arbitrary precision arithmetic. It allows you to compute approximations to an arbitrary degree of precision, and, contrary to most other libraries, *guarantees that all digits are correct*. It works by using [interval arithmetic](https://en.wikipedia.org/wiki/Interval_arithmetic) and [continued fractions](https://en.wikipedia.org/wiki/Continued_fraction). The bulk of this code is based on [Bill Gosper's notes on continued fractions](https://perl.plover.com/classes/cftalk/INFO/gosper.txt) in which he presents algorithms for doing arithmetic on continued fractions.
+'Reals' is a lightweight Python library for arbitrary precision arithmetic. It allows you to compute approximations to an arbitrary degree of precision, and, contrary to most other libraries, *guarantees that all digits it displays are correct*. It works by using [interval arithmetic](https://en.wikipedia.org/wiki/Interval_arithmetic) and [continued fractions](https://en.wikipedia.org/wiki/Continued_fraction). The bulk of this code is based on [Bill Gosper's notes on continued fractions](https://perl.plover.com/classes/cftalk/INFO/gosper.txt) in which he presents algorithms for doing arithmetic on continued fractions.
 
 The reals library is characterized by:
 - Correctness; the reals library uses interval arithmetic to ensure that all the digits are correct.
@@ -29,12 +16,21 @@ The reals library is characterized by:
 - Focus on usability.
 
 
+# Installation
+
+The recommended way of installing is using `pip`:
+
+```
+pip install reals
+```
+
+
 # Why use Reals?
 
 With Reals, it is much easier to get the actual result you want. Moreover, the digits of your results are *correct*, rather than only an approximation like in most other arbitrary-precision libraries.
 
 For example, consider that we want to evaluate the first 10 digits of the expression
-$$ 100000 \cdot (22873 \cdot e - 19791 \cdot \pi) $$
+$$100000 \cdot (22873 \cdot e - 19791 \cdot \pi)$$
 
 In native Python, we can do
 ```
@@ -65,7 +61,8 @@ $ python
 
 And get only correct digits (note that the last digit might be rounded up). You don't have to take my word from it, you can check the result on [Wolfram Alpha](https://www.wolframalpha.com/input?i=100000+*+%2822873+*+e+-+19791+*+pi%29).
 
-# Quick start
+
+# Quick start guide
 
 It is easiest to import any function or number that you need from the reals package:
 
@@ -95,6 +92,7 @@ Currently, the following constants and functions are supported and exported in t
 - Functions: `sqrt` (only for integers and rationals), `exp` (still very slow)
 - Operators: negation, addition, subtraction, multiplication, division
 - Trigonometric functions: `sin`, `sinh`, `csc`, `csch`, `cos`, `cosh`, `sec`, `sech`, `tan`, `tanh`, `cot`, `coth`
+
 
 # Development status
 
@@ -144,7 +142,7 @@ print(Approximation(pi / e).closest_float())
 ```
 
 
-Print a rational approximation of $e^\pi$ that [has an error of less than $10^{-20}$](https://www.wolframalpha.com/input?i=231604552633%2F10008540207-e%5Epi):
+Print a rational approximation of $e^\pi$ that has an error of less than $10^{-20}$ (again this can be checked with [Wolfram Alpha](https://www.wolframalpha.com/input?i=231604552633%2F10008540207-e%5Epi)):
 ```
 from reals import pi, exp
 from reals.approximation import Approximation
@@ -179,3 +177,9 @@ assert upper_bound - lower_bound < epsilon
 
 print(lower_bound, upper_bound)
 ```
+
+
+> Continued fractions are not only perfectly amenable to arithmetic, they are
+amenable to perfect arithmetic.
+
+ -- Bill Gosper

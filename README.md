@@ -1,15 +1,110 @@
-# reals
+> Continued fractions are not only perfectly amenable to arithmetic, they are
+amenable to perfect arithmetic.
 
-[![Build status](https://github.com/rubenvannieuwpoort/reals/actions/workflows/verify-on-push.yml/badge.svg?branch=master)](https://github.com/rubenvannieuwpoort/reals/actions) [![PyPI version](https://badge.fury.io/py/reals.svg)](https://pypi.org/project/reals/)
+ -- Bill Gosper
+
+<img src="media/logo.png" alt="reals logo" width="250px"/>
 
 A lightweight python3 library for arithmetic with real numbers.
 
-Note that this library is still very experimental. It is not well tested and many important features are missing. I welcome users, but don't use this library in production code.
+[![Build status](https://github.com/rubenvannieuwpoort/reals/actions/workflows/verify-on-push.yml/badge.svg?branch=master)](https://github.com/rubenvannieuwpoort/reals/actions) [![PyPI version](https://badge.fury.io/py/reals.svg)](https://pypi.org/project/reals/)
+
+# Installation guide
+
+## Using pip
+
+```
+pip install reals
+```
 
 
-## Introduction
+# What is Reals?
 
-This library implements the `Real` datatype, which supports [arbitrary precision arithmetic](https://en.wikipedia.org/wiki/Arbitrary-precision_arithmetic) using [interval arithmetic](https://en.wikipedia.org/wiki/Interval_arithmetic) with [continued fractions](https://en.wikipedia.org/wiki/Continued_fraction). The bulk of this code is based on [Bill Gosper's notes on continued fractions](https://perl.plover.com/classes/cftalk/INFO/gosper.txt) in which he presents algorithms for doing arithmetic on continued fractions.
+'Reals' is a lightweight Python library for arbitrary precision arithmetic. It allows you to compute approximations to an arbitrary degree of precision, and, contrary to most other libraries, *guarantees that all digits are correct*. It works by using [interval arithmetic](https://en.wikipedia.org/wiki/Interval_arithmetic) and [continued fractions](https://en.wikipedia.org/wiki/Continued_fraction). The bulk of this code is based on [Bill Gosper's notes on continued fractions](https://perl.plover.com/classes/cftalk/INFO/gosper.txt) in which he presents algorithms for doing arithmetic on continued fractions.
+
+The reals library is characterized by:
+- Correctness; the reals library uses interval arithmetic to ensure that all the digits are correct.
+- Calculations are done in a streaming way; the result of previous calculations can be re-used.
+- Uses no external libraries.
+- Focus on usability.
+
+
+# Why use Reals?
+
+With Reals, it is much easier to get the actual result you want. Moreover, the digits of your results are *correct*, rather than only an approximation like in most other arbitrary-precision libraries.
+
+For example, consider that we want to evaluate the first 10 digits of the expression
+$$ 100000 \cdot (22873 \cdot e - 19791 \cdot \pi) $$
+
+In native Python, we can do
+```
+$ python
+>>> from math import pi, e
+>>> print('{:.10f}'.format(100000 * (22873 * e - 19791 * pi)))
+5.5148142565
+```
+
+However, we might suspect that there would be some floating-point error that crept in this result (and we would be right). So, we `pip install mpmath` and try again:
+
+```
+$ pip install mpmath
+$ python
+>>> from mpmath import pi, e
+>>> 100000 * (22873 * e - 19791 * pi)
+mpf('5.5148149840533733')
+```
+
+Now, it is not clear how much of these digits are correct. On the other hand, using the `reals` library we do
+```
+$ pip install reals
+$ python
+>>> from reals import pi, e
+>>> print('{:.10f}'.format(100000 * (22873 * e - 19791 * pi)))
+5.5148143686
+```
+
+And get only correct digits (note that the last digit might be rounded up). You don't have to take my word from it, you can check the result on [Wolfram Alpha](https://www.wolframalpha.com/input?i=100000+*+%2822873+*+e+-+19791+*+pi%29).
+
+# Quick start
+
+It is easiest to import any function or number that you need from the reals package:
+
+```
+>>> from reals import sqrt
+```
+
+Now, you're ready to go:
+```
+>>> sqrt2 = sqrt(2)
+>>> sqrt2
+<reals._real.Real object at 0x10d182560 (approximate value: 1.41421)>
+```
+
+If you want to see more digits, there are multiple options. Let's say we want 10 digits. Then any of the following would work:
+```
+>>> sqrt2.evaluate(10)
+'1.4142135624'
+>>> '{:.10f}'.format(sqrt2)
+'1.4142135624'
+>>> sqrt2.to_decimal(10)
+Decimal('1.4142135624')
+```
+
+Currently, the following constants and functions are supported and exported in the `reals` package:
+- Constants: `pi`, `e`, `phi`
+- Functions: `sqrt` (only for integers and rationals), `exp` (still very slow)
+- Operators: negation, addition, subtraction, multiplication, division
+- Trigonometric functions: `sin`, `sinh`, `csc`, `csch`, `cos`, `cosh`, `sec`, `sech`, `tan`, `tanh`, `cot`, `coth`
+
+# Development status
+
+The library is in pre-1.0 version at the moment. This means it is still under development and can not be considered stable yet.
+
+Next steps are:
+- Implement `sqrt` for non-rationals
+- Implement `exp` in a faster and more stable way
+- Implement `log`
+- Implement exponentiation of real numbers (e.g. `x**y` where `x` and `y` are real numbers)
 
 
 ## Examples
@@ -84,37 +179,3 @@ assert upper_bound - lower_bound < epsilon
 
 print(lower_bound, upper_bound)
 ```
-
-
-## Contributing
-
-The reals library is very much in beta, much work is still to be done:
-  - Manual testing
-  - Add unit tests
-  - Implement square roots, logarithms, trigonometric functions
-  - Clean up the classes/functions
-  - Write better introduction and documentation
-
-
-### Exponentials and trigonometric functions
-
-For a real number $x$, we compute $e^x$ as follows:
-  1. Write $x = n + x_r$ with $n \in \mathbb{Z}$ and $-(1 + \epsilon) < x \leq 0$
-  2. Calculate $e^x = e^n \cdot e^{x_r}$
-
-We compute $e^k$ with the generalized continued fraction
-$$ e^n = 1 + \frac{2n}{2 - n + \frac{n^2}{6 + \frac{n^2}{10 + \frac{n^2}{14 + ...}}}} $$
-
-We calculate $e^{x_r}$ by using the power series for $e^x$:
-$$ e^x = \sum_{k = 0}^\infty \frac{x^k}{k!} $$
-
-Since $x_r$ is small, this power series converge well. Also, since $x_r$ is negative, truncation of the power series to $N$ terms is a lower bound for $e^{x_r}$ when $N$ is even, and an upper bound when $N$ is odd.
-
-So, to calculate the terms of the continued fraction, we can calculate two truncations of the power series, one which gives a lower bound and one which gives an upper bound (this can be done by using the arbitrary precision arithmetic which is already implemented). Then, we calculate the terms of the truncations -- if both truncations give the same continued fraction term, we know the next term of the continued fraction of $e^{x_r}$. Otherwise, we need to increase the number $N$ of terms that the truncations uses, and repeat the process.
-
-I think the same idea should work for the sine and cosine functions, but I haven't thought very hard about this yet.
-
-> Continued fractions are not only perfectly amenable to arithmetic, they are
-amenable to perfect arithmetic.
-
--- Bill Gosper

@@ -27,7 +27,7 @@ pip install reals
 
 # Why use Reals?
 
-With Reals, it is much easier to get the actual result you want. Moreover, the digits of your results are *correct*, rather than only an approximation like in most other arbitrary-precision libraries.
+With Reals, it is easy to get the result of a numerical calculation: The digits of your results are *correct*, rather than only an approximation like in most other arbitrary-precision libraries.
 
 For example, consider that we want to evaluate the first 10 digits of the expression
 $$100000 \cdot (22873 \cdot e - 19791 \cdot \pi)$$
@@ -60,6 +60,11 @@ $ python
 ```
 
 And get only correct digits (note that the last digit might be rounded up). You don't have to take my word from it, you can check the result on [Wolfram Alpha](https://www.wolframalpha.com/input?i=100000+*+%2822873+*+e+-+19791+*+pi%29).
+
+
+# Why *not* use Reals?
+
+The feature set of Reals is still a bit limited. Certain functions are not mature yet and their implementation should still be made more robust and optimized.
 
 
 # Quick start guide

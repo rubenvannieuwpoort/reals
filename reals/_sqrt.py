@@ -45,7 +45,7 @@ def sqrt(f: Union[Fraction, int]) -> reals._real.Real:
         return reals._real.Real(SqrtComputation(p))
 
     # simply returning SqrtComputation(Homographic(0, p, q, 0)) works for most fractions except when p, q are squares
-    # and q > 1 for q = 1 and p square a hack is in place which seems to work in practice, so this way of computing
+    # and q > 1 for q = 1 and p square -- a hack is in place which seems to work in practice, so this way of computing
     # works when p and q > 1 are squares
 
     # this is a variation on Real(SqrtComputation(p)) / Real(SqrtComputation(q)) with less overhead

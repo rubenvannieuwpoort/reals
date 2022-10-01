@@ -125,3 +125,8 @@ def test_sqrt_of_square_fractions() -> None:
 
 def test_best_rational_approximations() -> None:
     best_rational_approximations(e / pi, 10)
+
+
+def test_type_exception_when_mixing_with_floats() -> None:
+    with pytest.raises(TypeError):
+        _ = pi * 3.14

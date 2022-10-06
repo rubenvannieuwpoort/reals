@@ -1,4 +1,4 @@
-from reals import pi
+from reals import pi, exp
 from reals import sin, sinh, csc, csch, cos, cosh, sec, sech, tan, tanh, cot, coth
 
 from math import pi as math_pi
@@ -150,4 +150,10 @@ def test_coth_int() -> None:
 def test_coth_fraction() -> None:
     computed = '{:.100f}'.format(coth(Fraction(1, 2)))
     expected = '2.1639534137386528487700040102180231170937386021507922725335741192960876347833394865744094188097501153'
+    assert computed == expected
+
+
+def test_exp() -> None:
+    computed = '{:.100f}'.format(exp(1 / (pi * pi)))
+    expected = '1.1066320167919263117766683592471107492455596600981079480555345318984041430707902038526701842463312641'
     assert computed == expected

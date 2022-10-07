@@ -1,11 +1,11 @@
-# TODO(Ruben): this needs to be rewritten to use absolute imports
-from reals._real import Real
+from reals._real import Real, Number
 from reals._computation import Computation
 from reals.approximation import Approximation
 from reals._algebraic_computation import AlgebraicComputation
 
-from typing import Generator
+from decimal import Decimal
 from fractions import Fraction
+from typing import Generator
 
 
 def exp_frac_computation(x: int, y: int) -> Generator[tuple[int, int], None, None]:
@@ -49,5 +49,12 @@ class ExponentialComputation(Computation):
                 self.increase_precision()
 
 
-def exp(x: Real) -> Real:
-    return Real(ExponentialComputation(x))
+def exp(x: Number) -> Real:
+    if isinstance(x, int) or isinstance(x, Fraction) or isinstance(x, Decimal):
+        p, q = x.as_integer_ratio()
+        return exp_frac(Fraction(p, q))
+
+    if isinstance(x, Real):
+        return Real(ExponentialComputation(x))
+
+    raise TypeError()

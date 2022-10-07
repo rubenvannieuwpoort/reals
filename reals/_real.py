@@ -40,9 +40,17 @@ class Real:
         return CachedComputation(self.iterator, self.cache)
 
     @staticmethod
-    def from_number(x: Union[int, Fraction, Decimal]):
+    def from_number(x: Union[int, Fraction, Decimal, Real]):
+        if not (isinstance(x, int) or isinstance(x, Fraction) or isinstance(x, Decimal) or isinstance(x, Real)):
+            raise TypeError(f'Unexpected type {type(x)}')
+
+        if isinstance(x, Real):
+            return x
+
         if isinstance(x, int):
             return Real.from_int(x)
+
+        assert type(x) in [Fraction, Decimal]
 
         p, q = x.as_integer_ratio()
         return Real(reals._algebraic_computation.AlgebraicComputation(iter([]), (p, p, q, q)))
@@ -53,16 +61,22 @@ class Real:
 
     @staticmethod
     def from_fraction(f: Fraction) -> 'Real':
+        if not isinstance(f, Fraction):
+            raise TypeError(f'Expected Fraction, got {type(f)}')
         p, q = f.as_integer_ratio()
         return Real(reals._algebraic_computation.AlgebraicComputation(iter([]), (p, p, q, q)))
 
     @staticmethod
     def from_decimal(d: Decimal) -> 'Real':
+        if not isinstance(d, Decimal):
+            raise TypeError(f'Expected Decimal, got {type(d)}')
         p, q = d.as_integer_ratio()
         return Real(reals._algebraic_computation.AlgebraicComputation(iter([]), (p, p, q, q)))
 
     @staticmethod
     def from_float(f: float) -> 'Real':
+        if not isinstance(f, Fraction):
+            raise TypeError(f'Expected float, got {type(f)}')
         p, q = f.as_integer_ratio()
         return Real(reals._algebraic_computation.AlgebraicComputation(iter([]), (p, p, q, q)))
 
@@ -260,6 +274,7 @@ def ensure_real(x: Number) -> Real:
         return Real.from_int(x)
     if isinstance(x, Decimal):
         return Real.from_decimal(x)
+    raise TypeError()
 
 
 def raise_typeerror(other: Any) -> None:

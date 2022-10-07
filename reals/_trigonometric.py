@@ -1,76 +1,76 @@
-import reals._real
-import reals._constants
-import reals._computation
-import reals.approximation
-import reals._exponential
+from reals._real import Real, Number, ensure_real
+from reals._constants import pi
+from reals._computation import Computation
+from reals.approximation import Approximation
+from reals._exponential import exp
 
 from fractions import Fraction
 
 
-def sin(x: reals._real.Number):
-    x = reals._real.ensure_real(x)
+def sin(x: Number):
+    x = ensure_real(x)
     return _sin(x)
 
 
-def sinh(x: reals._real.Number):
-    x = reals._real.ensure_real(x)
-    return (reals._exponential.exp(x) - reals._exponential.exp(-x)) / 2
+def sinh(x: Number):
+    x = ensure_real(x)
+    return (exp(x) - exp(-x)) / 2
 
 
-def csc(x: reals._real.Number):
-    x = reals._real.ensure_real(x)
+def csc(x: Number):
+    x = ensure_real(x)
     return 1 / _sin(x)
 
 
-def csch(x: reals._real.Number):
-    x = reals._real.ensure_real(x)
-    return 2 / (reals._exponential.exp(x) - reals._exponential.exp(-x))
+def csch(x: Number):
+    x = ensure_real(x)
+    return 2 / (exp(x) - exp(-x))
 
 
-def cos(x: reals._real.Number):
-    x = reals._real.ensure_real(x)
+def cos(x: Number):
+    x = ensure_real(x)
     return _cos(x)
 
 
-def cosh(x: reals._real.Number):
-    x = reals._real.ensure_real(x)
-    return (reals._exponential.exp(x) + reals._exponential.exp(-x)) / 2
+def cosh(x: Number):
+    x = ensure_real(x)
+    return (exp(x) + exp(-x)) / 2
 
 
-def sec(x: reals._real.Number):
-    x = reals._real.ensure_real(x)
+def sec(x: Number):
+    x = ensure_real(x)
     return 1 / _cos(x)
 
 
-def sech(x: reals._real.Number):
-    x = reals._real.ensure_real(x)
-    return 2 / (reals._exponential.exp(x) + reals._exponential.exp(-x))
+def sech(x: Number):
+    x = ensure_real(x)
+    return 2 / (exp(x) + exp(-x))
 
 
-def tan(x: reals._real.Number) -> reals._real.Real:
-    x = reals._real.ensure_real(x)
+def tan(x: Number) -> Real:
+    x = ensure_real(x)
     return _sin(x) / _cos(x)
 
 
-def tanh(x: reals._real.Number):
-    x = reals._real.ensure_real(x)
-    exponential = reals._exponential.exp(2 * x)
+def tanh(x: Number):
+    x = ensure_real(x)
+    exponential = exp(2 * x)
     return (exponential - 1) / (exponential + 1)
 
 
-def cot(x: reals._real.Number) -> reals._real.Real:
-    x = reals._real.ensure_real(x)
+def cot(x: Number) -> Real:
+    x = ensure_real(x)
     return _cos(x) / _sin(x)
 
 
-def coth(x: reals._real.Number):
-    x = reals._real.ensure_real(x)
-    exponential = reals._exponential.exp(2 * x)
+def coth(x: Number):
+    x = ensure_real(x)
+    exponential = exp(2 * x)
     return (exponential + 1) / (exponential - 1)
 
 
-class SineComputation(reals._computation.Computation):
-    def __init__(self, x: reals._real.Real) -> None:
+class SineComputation(Computation):
+    def __init__(self, x: Real) -> None:
         self.terms = 0
         self.n = 0
         self.current_term = x
@@ -108,11 +108,11 @@ class SineComputation(reals._computation.Computation):
 
 
 # set n=1 for cosine, n=2 for sin/x
-class TrigComputation(reals._computation.Computation):
-    def __init__(self, n: int, x: reals._real.Real) -> None:
+class TrigComputation(Computation):
+    def __init__(self, n: int, x: Real) -> None:
         self.terms = 0
         self.n = n
-        self.current_term = reals._real.Real.from_int(1)
+        self.current_term = Real.from_int(1)
         self.x2 = -x * x
         self.lo = self.next_term()
         self.hi = self.lo + self.next_term()
@@ -147,19 +147,19 @@ class TrigComputation(reals._computation.Computation):
 
 
 # reduce to [-pi, pi] (plus or minus epsilon)
-def reduce(x: reals._real.Real) -> reals._real.Real:
-    a = reals.approximation.Approximation(x / (reals._constants.pi * 2) + Fraction(1, 2))
+def reduce(x: Real) -> Real:
+    a = Approximation(x / (pi * 2) + Fraction(1, 2))
     epsilon = Fraction(1, 1000)
     a.improve_epsilon(epsilon)
     frac = a.as_fraction()
     assert frac
     p, q = frac.as_integer_ratio()
-    return x - reals._constants.pi * 2 * (p // q)
+    return x - pi * 2 * (p // q)
 
 
-def _sin(x: reals._real.Real) -> reals._real.Real:
+def _sin(x: Real) -> Real:
     xr = reduce(x)
-    a = reals.approximation.Approximation(2 * xr / reals._constants.pi + Fraction(1, 2))
+    a = Approximation(2 * xr / pi + Fraction(1, 2))
     epsilon = Fraction(1, 1000)
     a.improve_epsilon(epsilon)
     frac = a.as_fraction()
@@ -167,21 +167,21 @@ def _sin(x: reals._real.Real) -> reals._real.Real:
     p, q = frac.as_integer_ratio()
     n = p // q
     if n == -2:
-        return -_sin2(reals._constants.pi + xr)
+        return -_sin2(pi + xr)
     if n == -1:
-        return -_cos2(xr + reals._constants.pi / 2)
+        return -_cos2(xr + pi / 2)
     if n == 0:
         return _sin2(xr)
     if n == 1:
-        return _cos2(xr - reals._constants.pi / 2)
+        return _cos2(xr - pi / 2)
     if n == 2:
-        return _sin2(reals._constants.pi - xr)
+        return _sin2(pi - xr)
     raise Exception()
 
 
-def _cos(x: reals._real.Real) -> reals._real.Real:
+def _cos(x: Real) -> Real:
     xr = reduce(x)
-    a = reals.approximation.Approximation(2 * xr / reals._constants.pi + Fraction(1, 2))
+    a = Approximation(2 * xr / pi + Fraction(1, 2))
     epsilon = Fraction(1, 1000)
     a.improve_epsilon(epsilon)
     frac = a.as_fraction()
@@ -189,21 +189,21 @@ def _cos(x: reals._real.Real) -> reals._real.Real:
     p, q = frac.as_integer_ratio()
     n = p // q
     if n == -2:
-        return -_cos2(xr + reals._constants.pi)
+        return -_cos2(xr + pi)
     if n == -1:
-        return _sin2(reals._constants.pi / 2 + xr)
+        return _sin2(pi / 2 + xr)
     if n == 0:
         return _cos2(xr)
     if n == 1:
-        return _sin2(reals._constants.pi / 2 - xr)
+        return _sin2(pi / 2 - xr)
     if n == 2:
-        return -_cos2(xr - reals._constants.pi)
+        return -_cos2(xr - pi)
     raise Exception()
 
 
-def _sin2(x: reals._real.Real) -> reals._real.Real:
-    return x * reals._real.Real(TrigComputation(2, x))
+def _sin2(x: Real) -> Real:
+    return x * Real(TrigComputation(2, x))
 
 
-def _cos2(x: reals._real.Real) -> reals._real.Real:
-    return reals._real.Real(TrigComputation(1, x))
+def _cos2(x: Real) -> Real:
+    return Real(TrigComputation(1, x))

@@ -170,4 +170,8 @@ def test_exp_log() -> None:
     expected = pi.evaluate(100, round=False)
     assert computed == expected
 
+
+def test_pow() -> None:
+    computed = (pi**pi).evaluate(100, round=False)
+    expected = '36.4621596072079117709908260226921236663655084022288187387093359229340743688816999046200798757067748543'
     assert computed == expected

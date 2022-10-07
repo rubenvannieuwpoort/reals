@@ -146,6 +146,11 @@ class Real:
         else:
             raise_typeerror(other)
 
+    def __pow__(self, other):
+        import reals._logarithm
+        import reals._exponential
+        return reals._exponential.exp(reals._logarithm.log(self) * other)
+
     def __lt__(self, other: Real) -> bool:
         from reals._compare import compare, ComparisonResult
         return compare(self, other) == ComparisonResult.SMALLER

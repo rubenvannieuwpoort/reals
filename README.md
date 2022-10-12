@@ -73,7 +73,7 @@ And get only correct digits (note that the last digit might be rounded up). You 
 
 # Why *not* use Reals?
 
-The feature set of Reals is still a bit limited. Certain functions are not mature yet and their implementation should still be made more robust and optimized.
+The Reals library does not use the most optimized functions. It places programmer and user convenience above performance. As a rule of thumb, if you need about a couple of hundred digits, you can use Reals, if you need many thousands of digits, you should probably use an arbitrary-precision floating point library such as mpmath.
 
 
 # Quick start guide
@@ -103,8 +103,8 @@ Decimal('1.4142135624')
 
 Currently, the following constants and functions are supported and exported in the `reals` package:
 - Constants: `pi`, `e`, `phi`
-- Functions: `sqrt` (only for integers and rationals), `exp` (still very slow)
-- Operators: negation, addition, subtraction, multiplication, division
+- Functions related to powers: `sqrt`, `exp`, `log`
+- Operators: negation, addition, subtraction, multiplication, division, powers
 - Trigonometric functions: `sin`, `sinh`, `csc`, `csch`, `cos`, `cosh`, `sec`, `sech`, `tan`, `tanh`, `cot`, `coth`
 
 
@@ -112,11 +112,10 @@ Currently, the following constants and functions are supported and exported in t
 
 The library is in pre-1.0 version at the moment. This means it is still under development and can not be considered stable yet.
 
-Next steps are:
-- Implement `sqrt` for non-rationals
-- Implement `exp` in a faster and more stable way
-- Implement `log`
-- Implement exponentiation of real numbers (e.g. `x**y` where `x` and `y` are real numbers)
+Before the 1.0 release, the following things need to be done:
+  - The code needs to be refactored so that there are no cyclic dependencies
+  - Many functions need to be optimized
+  - The unit test coverage needs to be drastically improved
 
 
 ## Examples

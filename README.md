@@ -29,10 +29,19 @@ pip install reals
 
 With Reals, it is easy to get the result of a numerical calculation: The digits of your results are *correct*, rather than only an approximation like in most other arbitrary-precision libraries.
 
-For example, consider that we want to evaluate the first 10 digits of the expression
+Normally, we expect at least 15 digits of precision from our 64-bit floating-point numbers. For example:
+```
+>>> from math import pi
+>>> print(pi)
+3.141592653589793
+```
+
+And indeed all of the 16 digits are correct. However, when we do calculations with floats, we will lose a lot of precision, and it is not clear how many digits of the result of a calculations are correct.
+
+For example, consider the case where we want to evaluate the first 10 digits of the expression
 $$100000 \cdot (22873 \cdot e - 19791 \cdot \pi)$$
 
-In native Python, we can do
+In native Python, we can use the 64-bit floating-point `float` datatype and do
 ```
 $ python
 >>> from math import pi, e

@@ -8,23 +8,26 @@ from fractions import Fraction
 from typing import Generator
 
 
-def exp_frac_computation(x: int, y: int) -> Generator[tuple[int, int], None, None]:
-    m = 6 * y
-    x_squared = x * x
-    incr = 4 * y
+def log_frac_computation(x: int, y: int) -> Generator[tuple[int, int], None, None]:
+    x -= y
+    yield (0, x)
+
+    m, n = x, y
+    incr = 2 * y
     while True:
-        yield (m, x_squared)
-        m += incr
+        yield (n, m)
+        yield (2, m)
+        m += x
+        n += incr
 
 
-def exp_frac(f: Fraction) -> Real:
+def log_frac(f: Fraction) -> Real:
     x, y = f.as_integer_ratio()
-    x_squared = x * x
-    computation = Real(exp_frac_computation(x, y)).compute()
-    return Real(AlgebraicComputation(computation, (2 * y + x, x_squared, 2 * y - x, x_squared)))
+    computation = Real(log_frac_computation(x, y)).compute()
+    return Real(AlgebraicComputation(computation, (1, 0, 0, 1)))
 
 
-class ExponentialComputation(Computation):
+class LogarithmicComputation(Computation):
     def __init__(self, x: Real):
         self.a = Approximation(x)
         self.n = 0
@@ -32,8 +35,8 @@ class ExponentialComputation(Computation):
 
     def increase_precision(self):
         self.a.improve(10)
-        self.lo = exp_frac(self.a.lower_bound_fraction()).compute()
-        self.hi = exp_frac(self.a.upper_bound_fraction()).compute()
+        self.lo = log_frac(self.a.lower_bound_fraction()).compute()
+        self.hi = log_frac(self.a.upper_bound_fraction()).compute()
         for _ in range(0, self.n):
             next(self.lo)
             next(self.hi)
@@ -49,12 +52,12 @@ class ExponentialComputation(Computation):
                 self.increase_precision()
 
 
-def exp(x: Number) -> Real:
+def log(x: Number) -> Real:
     if isinstance(x, int) or isinstance(x, Fraction) or isinstance(x, Decimal):
         p, q = x.as_integer_ratio()
-        return exp_frac(Fraction(p, q))
+        return log_frac(Fraction(p, q))
 
     if isinstance(x, Real):
-        return Real(ExponentialComputation(x))
+        return Real(LogarithmicComputation(x))
 
     raise TypeError()

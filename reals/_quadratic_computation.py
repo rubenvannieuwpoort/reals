@@ -33,7 +33,7 @@ class QuadraticComputation(reals._computation.Computation):
             self.terminated = self.state.y_ingest_inf()
 
     def close_enough(self, a: int, b: int) -> bool:
-        return (a == b) or not self.simple_mode and (a == b + 1 or b == a + 1)
+        return (a == b) or (not self.simple_mode) and (a == b + 1 or b == a + 1)
 
     def __next__(self) -> reals._term.Term:
         if self.terminated:

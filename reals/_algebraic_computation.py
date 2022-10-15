@@ -44,7 +44,7 @@ class AlgebraicComputation(reals._computation.Computation):
                     self.simple_mode = True
                     self.terminated = self.state.emit(n1)
                     return n1
-                elif not self.simple_mode and n1 == n2 + 1 or n1 + 1 == n2:
+                elif (not self.simple_mode) and (n1 == n2 + 1 or n1 + 1 == n2):
                     n = min(n1, n2)
                     m = max(n1, n2) - n + 1
                     assert m != 1

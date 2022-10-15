@@ -1,20 +1,17 @@
-import reals._term
-import reals._utils
-import reals._computation
-import reals._bihomographic
+from reals._term import Term
+from reals._utils import sign
+from reals._computation.base import Computation
+from reals._classes.bihomographic import Bihomographic
 
 
 DEFAULT_MAX_INGESTIONS = 15
 
 
-class QuadraticComputation(reals._computation.Computation):
-    def __init__(self,
-                 x: reals._computation.Computation,
-                 y: reals._computation.Computation,
-                 coeffs: tuple[int, int, int, int, int, int, int, int],
+class QuadraticComputation(Computation):
+    def __init__(self, x: Computation, y: Computation, coeffs: tuple[int, int, int, int, int, int, int, int],
                  max_ingestions=DEFAULT_MAX_INGESTIONS) -> None:
         a, b, c, d, e, f, g, h = coeffs
-        self.state = reals._bihomographic.Bihomographic(a, b, c, d, e, f, g, h)
+        self.state = Bihomographic(a, b, c, d, e, f, g, h)
         self.x, self.y = x, y
         self.max_ingestions = max_ingestions
         self.terminated = False
@@ -35,7 +32,7 @@ class QuadraticComputation(reals._computation.Computation):
     def close_enough(self, a: int, b: int) -> bool:
         return (a == b) or (not self.simple_mode) and (a == b + 1 or b == a + 1)
 
-    def __next__(self) -> reals._term.Term:
+    def __next__(self) -> Term:
         if self.terminated:
             raise StopIteration()
 
@@ -55,12 +52,8 @@ class QuadraticComputation(reals._computation.Computation):
             n11 = self.state.a
             d11 = self.state.e
 
-            x_ingest = (d00 == 0 or d10 == 0 or d11 == 0 or
-                        reals._utils.sign(d00) != reals._utils.sign(d10) or
-                        reals._utils.sign(d01) != reals._utils.sign(d11))
-            y_ingest = (d00 == 0 or d01 == 0 or d11 == 0 or
-                        reals._utils.sign(d00) != reals._utils.sign(d01) or
-                        reals._utils.sign(d10) != reals._utils.sign(d11))
+            x_ingest = (d00 == 0 or d10 == 0 or d11 == 0 or sign(d00) != sign(d10) or sign(d01) != sign(d11))
+            y_ingest = (d00 == 0 or d01 == 0 or d11 == 0 or sign(d00) != sign(d01) or sign(d10) != sign(d11))
 
             if not x_ingest and not y_ingest:
                 q00 = n00 // d00

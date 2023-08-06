@@ -73,7 +73,7 @@ And get only correct digits (note that the last digit might be rounded up). You 
 
 # Why *not* use Reals?
 
-The Reals library does not use the most optimized functions. It places programmer and user convenience above performance. As a rule of thumb, if you need about a couple of hundred digits, you can use Reals, if you need many thousands of digits, you should probably use an arbitrary-precision floating point library such as mpmath.
+The Reals library does not use the most optimized functions. It places programmer and user convenience above performance. As a rule of thumb, if you need about a couple of hundred digits, you can use Reals, if you need many thousands of digits, you should probably use an arbitrary-precision floating point library such as mpmath (which means you will also need to perform tedious error checking to guarantee that your results are correct).
 
 
 # Quick start guide

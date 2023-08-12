@@ -20,10 +20,17 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install tox build --user
-    - name: Run tox
+        python -m pip install -e .[dev]
+        python -m pip install build --user
+    - name: Style checking
       run: |
-        tox
+        flake8 reals tests --max-line-length 120
+    - name: Type checking
+      run: |
+        mypy reals tests
+    - name: Unit tests
+      run: |
+        pytest tests
     - name: Build a binary wheel and a source tarball
       run: |
         python -m build --sdist --wheel --outdir dist/
@@ -31,4 +38,3 @@ jobs:
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         password: ${{ secrets.PYPI_API_TOKEN }}
-

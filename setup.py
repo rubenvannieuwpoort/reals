@@ -24,4 +24,11 @@ setuptools.setup(
         'Operating System :: OS Independent',
     ],
     python_requires='>=3.10',
+    extras_require={
+        'dev': [
+            'pytest==7.4.0',
+            'mypy==1.5.0',
+            'flake8==6.1.0',
+        ],
+    },
 )

@@ -278,7 +278,7 @@ def ensure_real(x: Number) -> Real:
 
 
 def raise_typeerror(other: Any) -> None:
-    if type(other) == float:
+    if isinstance(other, float):
         raise TypeError('Mixing float with reals is not supported. Use Real.from_float if you want to convert '
                         'a float to a real.')
     raise TypeError(f'Mixing {type(other)} with reals is not supported.')

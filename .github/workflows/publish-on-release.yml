@@ -30,7 +30,7 @@ jobs:
         mypy reals tests
     - name: Unit tests
       run: |
-        pytest tests
+        pytest tests --timeout=2
     - name: Build a binary wheel and a source tarball
       run: |
         python -m build --sdist --wheel --outdir dist/

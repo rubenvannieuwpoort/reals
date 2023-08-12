@@ -27,4 +27,4 @@ jobs:
         mypy reals tests
     - name: Unit tests
       run: |
-        pytest tests
+        pytest tests --timeout=2

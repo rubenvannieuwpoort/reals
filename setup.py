@@ -29,6 +29,7 @@ setuptools.setup(
             'pytest==7.4.0',
             'mypy==1.5.0',
             'flake8==6.1.0',
+            'pytest-timeout==2.1.0',
         ],
     },
 )

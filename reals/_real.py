@@ -75,7 +75,7 @@ class Real:
 
     @staticmethod
     def from_float(f: float) -> 'Real':
-        if not isinstance(f, Fraction):
+        if not isinstance(f, float):
             raise TypeError(f'Expected float, got {type(f)}')
         p, q = f.as_integer_ratio()
         return Real(reals._algebraic_computation.AlgebraicComputation(iter([]), (p, p, q, q)))

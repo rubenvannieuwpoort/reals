@@ -6,3 +6,4 @@ reals.egg-info
 .pytest_cache
 .mypy_cache
 build/
+*.pyc

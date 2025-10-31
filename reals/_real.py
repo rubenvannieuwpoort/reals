@@ -42,21 +42,17 @@ class Real:
     @staticmethod
     def from_number(x: Union[int, Fraction, Decimal, Real]):
         if not (isinstance(x, int) or isinstance(x, Fraction) or isinstance(x, Decimal) or isinstance(x, Real)):
-            raise TypeError(f'Unexpected type {type(x)}')
+            raise TypeError(f'Expected int, Fraction, Decimal, or Real, got {type(f)}')
 
         if isinstance(x, Real):
             return x
 
-        if isinstance(x, int):
-            return Real.from_int(x)
-
-        assert type(x) in [Fraction, Decimal]
-
-        p, q = x.as_integer_ratio()
-        return Real(reals._algebraic_computation.AlgebraicComputation(iter([]), (p, p, q, q)))
+        return Real.from_fractional(x)
 
     @staticmethod
     def from_int(n: int) -> 'Real':
+        if not isinstance(n, int):
+            raise TypeError(f'Expected int, got {type(f)}')
         return Real([n])
 
     @staticmethod
@@ -71,6 +67,17 @@ class Real:
         if not isinstance(d, Decimal):
             raise TypeError(f'Expected Decimal, got {type(d)}')
         p, q = d.as_integer_ratio()
+        return Real(reals._algebraic_computation.AlgebraicComputation(iter([]), (p, p, q, q)))
+
+    @staticmethod
+    def from_fractional(x: Union[int, Fraction, Decimal]):
+        if isinstance(x, int):
+            return Real.from_int(x)
+
+        if not (isinstance(x, Fraction) or isinstance(x, Decimal)):
+            raise TypeError(f'Expected int, Fraction, or Decimal, got {type(x)}')
+
+        p, q = x.as_integer_ratio()
         return Real(reals._algebraic_computation.AlgebraicComputation(iter([]), (p, p, q, q)))
 
     @staticmethod
@@ -91,7 +98,7 @@ class Real:
         return Real(reals._algebraic_computation.AlgebraicComputation(self.compute(), (-1, 0, 0, 1)))
 
     def __mul__(self, other):
-        if isinstance(other, Fraction) or isinstance(other, int):
+        if isinstance(other, Fraction) or isinstance(other, int) or isinstance(other, Decimal):
             p, q = other.as_integer_ratio()
             return Real(reals._algebraic_computation.AlgebraicComputation(self.compute(), (p, 0, 0, q)))
         elif isinstance(other, Real):
@@ -103,14 +110,14 @@ class Real:
             raise_typeerror(other)
 
     def __rmul__(self, other):
-        if isinstance(other, Fraction) or isinstance(other, int):
+        if isinstance(other, Fraction) or isinstance(other, int) or isinstance(other, Decimal):
             p, q = other.as_integer_ratio()
             return Real(reals._algebraic_computation.AlgebraicComputation(self.compute(), (p, 0, 0, q)))
         else:
             raise_typeerror(other)
 
     def __add__(self, other):
-        if isinstance(other, Fraction) or isinstance(other, int):
+        if isinstance(other, Fraction) or isinstance(other, int) or isinstance(other, Decimal):
             p, q = other.as_integer_ratio()
             return Real(reals._algebraic_computation.AlgebraicComputation(self.compute(), (q, p, 0, q)))
         elif isinstance(other, Real):
@@ -120,14 +127,14 @@ class Real:
             raise_typeerror(other)
 
     def __radd__(self, other):
-        if isinstance(other, Fraction) or isinstance(other, int):
+        if isinstance(other, Fraction) or isinstance(other, int) or isinstance(other, Decimal):
             p, q = other.as_integer_ratio()
             return Real(reals._algebraic_computation.AlgebraicComputation(self.compute(), (q, p, 0, q)))
         else:
             raise_typeerror(other)
 
     def __sub__(self, other):
-        if isinstance(other, Fraction) or isinstance(other, int):
+        if isinstance(other, Fraction) or isinstance(other, int) or isinstance(other, Decimal):
             p, q = other.as_integer_ratio()
             return Real(reals._algebraic_computation.AlgebraicComputation(self.compute(), (q, -p, 0, q)))
         elif isinstance(other, Real):
@@ -137,14 +144,14 @@ class Real:
             raise_typeerror(other)
 
     def __rsub__(self, other):
-        if isinstance(other, Fraction) or isinstance(other, int):
+        if isinstance(other, Fraction) or isinstance(other, int) or isinstance(other, Decimal):
             p, q = other.as_integer_ratio()
             return Real(reals._algebraic_computation.AlgebraicComputation(self.compute(), (-q, p, 0, q)))
         else:
             raise_typeerror(other)
 
     def __truediv__(self, other):
-        if isinstance(other, Fraction) or isinstance(other, int):
+        if isinstance(other, Fraction) or isinstance(other, int) or isinstance(other, Decimal):
             p, q = other.as_integer_ratio()
             return Real(reals._algebraic_computation.AlgebraicComputation(self.compute(), (q, 0, 0, p)))
         elif isinstance(other, Real):
@@ -154,7 +161,7 @@ class Real:
             raise_typeerror(other)
 
     def __rtruediv__(self, other):
-        if isinstance(other, Fraction) or isinstance(other, int):
+        if isinstance(other, Fraction) or isinstance(other, int) or isinstance(other, Decimal):
             p, q = other.as_integer_ratio()
             return Real(reals._algebraic_computation.AlgebraicComputation(self.compute(), (0, p, q, 0)))
         else:
@@ -278,7 +285,7 @@ def ensure_real(x: Number) -> Real:
 
 
 def raise_typeerror(other: Any) -> None:
-    if isinstance(other, float):
+    if other is float:
         raise TypeError('Mixing float with reals is not supported. Use Real.from_float if you want to convert '
                         'a float to a real.')
     raise TypeError(f'Mixing {type(other)} with reals is not supported.')

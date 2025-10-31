@@ -42,7 +42,7 @@ class Real:
     @staticmethod
     def from_number(x: Union[int, Fraction, Decimal, Real]):
         if not (isinstance(x, int) or isinstance(x, Fraction) or isinstance(x, Decimal) or isinstance(x, Real)):
-            raise TypeError(f'Expected int, Fraction, Decimal, or Real, got {type(f)}')
+            raise TypeError(f'Expected int, Fraction, Decimal, or Real, got {type(x)}')
 
         if isinstance(x, Real):
             return x
@@ -52,7 +52,7 @@ class Real:
     @staticmethod
     def from_int(n: int) -> 'Real':
         if not isinstance(n, int):
-            raise TypeError(f'Expected int, got {type(f)}')
+            raise TypeError(f'Expected int, got {type(n)}')
         return Real([n])
 
     @staticmethod

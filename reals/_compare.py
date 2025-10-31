@@ -31,10 +31,10 @@ def compare(x: Real, y: Real, epsilon: Fraction = EPSILON) -> ComparisonResult:
         y_lower = y_approximation.lower_bound_fraction()
         y_upper = y_approximation.upper_bound_fraction()
 
-        if x_upper and y_lower and x_upper < y_lower:
+        if x_upper is not None and y_lower is not None and x_upper < y_lower:
             return ComparisonResult.SMALLER
 
-        if x_lower and y_upper and y_upper < x_lower:
+        if x_lower is not None and y_upper is not None and y_upper < x_lower:
             return ComparisonResult.GREATER
 
         x_eps = x_approximation.epsilon_fraction()

@@ -1,7 +1,8 @@
 from reals._real import Real, Number
+from reals._constants import log2
 from reals._computation import Computation
 from reals.approximation import Approximation
-from reals._algebraic_computation import AlgebraicComputation
+from reals._quadratic_computation import QuadraticComputation
 
 from decimal import Decimal
 from fractions import Fraction
@@ -21,10 +22,14 @@ def log_frac_computation(x: int, y: int) -> Generator[tuple[int, int], None, Non
         n += incr
 
 
-def log_frac(f: Fraction) -> Real:
+def log_frac(f: Fraction, N: int | None = None) -> Real:
     x, y = f.as_integer_ratio()
-    computation = Real(log_frac_computation(x, y)).compute()
-    return Real(AlgebraicComputation(computation, (1, 0, 0, 1)))
+
+    if N is None:
+        N = (x // y).bit_length()
+
+    computation = Real(log_frac_computation(x, y << N)).compute()
+    return Real(QuadraticComputation(computation, log2.compute(), (0, 1, N, 0, 0, 0, 0, 1)))
 
 
 class LogarithmicComputation(Computation):
